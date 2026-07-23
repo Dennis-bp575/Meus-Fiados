@@ -452,34 +452,32 @@ if ("serviceWorker" in navigator) {
       r.start();
     }
 
-    function excluirItem(id) {
-      if (confirm("Excluir este gasto?")) {
-        gastos = gastos.filter(i => i.id !== id);
-        renderizar();
-      }
-    }
-
-	// Certifique-se de colocar 'async' na sua função de deletar/quitar
-	async function quitarCliente(nomeCliente, valorTotalCliente) {
-	  
-		  // Formata o valor para exibir bonito no popup
-		  const valorFormatado = valorTotalCliente.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+	async function excluirItem(id) {
+		  // 1. Busca o item correto no seu array de gastos para pegar o Nome e o Valor antes de apagar
+		  const itemParaExcluir = gastos.find(i => i.id === id);
+		  
+		  // Se por algum motivo não achar o item, interrompe para não dar erro
+		  if (!itemParaExcluir) return;
 		
-		  // Chama o mesmo modal, mas muda o cabeçalho para avisar o dono do bar
+		  const nomeCliente = itemParaExcluir.nome || itemParaExcluir.categoria || "Cliente";
+		  const valorCliente = itemParaExcluir.valor;
+		
+		  // 2. Formata o valor para ficar bonito no padrão R$ XX,XX
+		  const valorFormatado = valorCliente.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+		
+		  // 3. Abre o modal customizado e aguarda a resposta do dono do bar
 		  const confirmou = await mostrarConfirmacaoCustomizada(
 		    nomeCliente, 
 		    valorFormatado, 
 		    "⚠️ CONFIRMAR PAGAMENTO TOTAL?"
 		  );
 		
+		  // 4. Se ele clicou em "Confirmar", roda a sua lógica antiga de filtro e limpa a tela
 		  if (confirmou) {
 		    gastos = gastos.filter(i => i.id !== id);
-        	renderizar();
-		  } 
+		    renderizar();
+		  }
 	}
-
-
-
 	  
 	function extrairNomeValor(frase) {
 	    // 1. Limpa a frase (remove palavras e o "R$")
