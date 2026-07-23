@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<!-- Configurações de App (PWA) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- Manifest Simplificado (Simula o F11) -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Meus Fiados</title>
+
+  <!-- Tailwind e Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://googleapis.com" rel="stylesheet">
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+  
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .aba-ativa {
+      border-bottom: 3px solid #2563eb;
+      color: #2563eb;
+      font-weight: 700;
+    }
+    .botao-grande { min-height: 64px; }
+  </style>
+</head>
+
+<body class="bg-slate-100 flex justify-center min-h-screen">
+
+		<!-- Cole este bloco logo após a abertura da tag <body> do seu index.html -->
+		<div id="vibet-splash">
+		    <div class="splash-content">
+		        <div class="splash-subtitle">Uma criação</div>
+		        <div class="splash-logo">vibe<span>Ti</span></div>
+		        <div class="splash-app-name">Meus Fiados</div>
+		        <div class="splash-loader">
+		            <div class="splash-progress"></div>
+		        </div>
+		    </div>
+		</div>
+		
+		<style>
+		/* Estilos isolados para não quebrar o layout do seu app */
+		#vibet-splash {
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    width: 100vw;
+		    height: 100vh;
+		    background-color: #0a0e17;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    z-index: 99999; /* Garante que fica por cima de tudo */
+		    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+		    transition: opacity 0.4s ease, transform 0.4s ease;
+		}
+		
+		.splash-content {
+		    text-align: center;
+		    width: 100%;
+		    max-width: 450px;
+		    padding: 20px;
+		}
+		
+		.splash-subtitle {
+		    color: #64748b;
+		    font-size: 0.85rem;
+		    text-transform: uppercase;
+		    letter-spacing: 6px;
+		    margin-bottom: 6px;
+		    opacity: 0;
+		    animation: splFadeIn 0.8s ease forwards 0.2s;
+		}
+		
+		.splash-logo {
+		    font-size: 3.5rem;
+		    color: #ffffff;
+		    font-weight: 300;
+		    letter-spacing: -0.5px;
+		    opacity: 0;
+		    transform: translateY(10px);
+		    animation: splFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s;
+		}
+		
+		.splash-logo span {
+		    color: #10b981; /* Verde esmeralda para finanças */
+		    font-weight: 700;
+		}
+		
+		.splash-app-name {
+		    color: #94a3b8;
+		    font-size: 1.25rem;
+		    margin-top: 12px;
+		    font-weight: 500;
+		    letter-spacing: 1px;
+		    opacity: 0;
+		    animation: splFadeIn 0.8s ease forwards 1s;
+		}
+		
+		.splash-loader {
+		    width: 180px;
+		    height: 3px;
+		    background-color: #1e293b;
+		    margin: 24px auto 0 auto;
+		    border-radius: 4px;
+		    overflow: hidden;
+		}
+		
+		.splash-progress {
+		    width: 0%;
+		    height: 100%;
+		    background: linear-gradient(90deg, #10b981, #3b82f6);
+		    animation: splLoad 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.8s;
+		}
+		
+		/* Classes de saída que serão ativadas por JavaScript */
+		#vibet-splash.fade-out {
+		    opacity: 0;
+		    pointer-events: none;
+		    transform: scale(1.02); /* Leve efeito de zoom ao sair */
+		}
+		
+		/* Animações */
+		@keyframes splFadeIn { to { opacity: 1; } }
+		@keyframes splFadeUp { to { opacity: 1; transform: translateY(0); } }
+		@keyframes splLoad { to { width: 100%; } }
+		</style>
+		
+		<script>
+		// Controle de inicialização do PWA
+		document.addEventListener("DOMContentLoaded", () => {
+		    const splash = document.getElementById("vibet-splash");
+		    
+		    // Simula o tempo de carregamento dos módulos do Gastos Pro (2.5 segundos)
+		    // No seu app real, você pode disparar isso quando seus dados/banco local carregarem
+		    setTimeout(() => {
+		        splash.classList.add("fade-out");
+		        
+		        // Remove totalmente do DOM após a transição para economizar memória
+		        setTimeout(() => splash.remove(), 400); 
+		    }, 2500);
+		});
+		</script>
+
+	
+
+  <div class="w-full max-w-md bg-white shadow-2xl flex flex-col rounded-none sm:rounded-3xl overflow-hidden">
+
+    <!-- ABAS -->
+    <div class="flex border-b bg-white sticky top-0 z-10">
+      <button onclick="mudarAba(-1)" id="tab-1"
+        class="flex-1 py-4 text-slate-400 text-xs uppercase tracking-wider transition">
+        Anterior
+      </button>
+      <button onclick="mudarAba(0)" id="tab0"
+        class="flex-1 py-4 aba-ativa text-xs uppercase tracking-wider transition">
+        Este Mês
+      </button>
+      <button onclick="mudarAba(1)" id="tab1"
+        class="flex-1 py-4 text-slate-400 text-xs uppercase tracking-wider transition">
+        Próximo
+      </button>
+    </div>
+
+    <div class="p-6 flex-1">
+
+      <!-- TOTAL -->
+      <div class="bg-gradient-to-r from-blue-500 via-blue-600 to-indigo-800
+            text-white rounded-none p-8 mb-8 shadow-xl">
+		  <div class="text-sm opacity-75 uppercase tracking-wider mb-2">
+		    Total a Receber
+		  </div>
+		
+		  <div id="displayTotal"
+		       class="text-5xl font-extrabold leading-none">
+		    R$ 0,00
+		  </div>
+		
+		  <div id="nomeMes"
+		       class="text-base mt-3 opacity-90 font-medium">
+		    MAIO 2026
+		  </div>
+	  </div>
+      <!-- BOTÃO VOZ -->
+      <button onclick="iniciarMicrofone()"
+	  class="w-full
+	         bg-gradient-to-r
+	         from-sky-500
+	         via-blue-600
+	         to-violet-700
+	         hover:brightness-110
+	         text-white
+	         rounded-none
+	         botao-grande
+	         mb-8
+	         flex items-center justify-center gap-3
+	         shadow-lg shadow-blue-500/30
+	         active:scale-95
+	         transition-all">
+        <span class="text-xl font-semibold">+ Adicionar cliente e valor</span>
+		<span class="text-2xl">🎤</span>
+      </button>
+
+      <!-- LISTA -->
+      <div id="listaGastos" class="space-y-4 pb-24"></div>
+
+    </div>
+  </div>
+
+  <script>
+    let abaAtual = 0;
+    let gastos = JSON.parse(localStorage.getItem("meu_fiado")) || [];
+
+    function getMesReferencia(offset) {
+      const d = new Date();
+      d.setMonth(d.getMonth() + offset);
+      const meses = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
+      return `${meses[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function mudarAba(index) {
+      abaAtual = index;
+      document.querySelectorAll('[id^="tab"]').forEach(el =>
+        el.classList.remove('aba-ativa','text-slate-900'));
+      document.getElementById('tab' + index).classList.add('aba-ativa');
+      renderizar();
+    }
+
+    function renderizar() {
+		const container = document.getElementById('listaGastos');
+		const displayTotal = document.getElementById('displayTotal');
+		const nomeMesDisplay = document.getElementById('nomeMes');
+		const mesNome = getMesReferencia(abaAtual);
+
+		nomeMesDisplay.innerText = mesNome;
+		container.innerHTML = "";
+		let total = 0;
+
+		const gastosFiltrados = gastos.filter(g => g.mesRef === mesNome);
+
+		if (gastosFiltrados.length === 0) {
+			container.innerHTML =
+			`<div class="text-center text-slate-300 py-12 italic">
+				Sem gastos em ${mesNome.toLowerCase()}
+			</div>`;
+		}
+
+		// Rodando cada gasto do mês selecionado
+		gastosFiltrados.forEach(item => {
+			total += item.valor;
+
+			// CORREÇÃO 1: Criamos o container do item na memória para o clique funcionar individualmente
+			const divContainerGasto = document.createElement('div');
+			divContainerGasto.className = "flex flex-col border-b border-slate-100 py-1";
+
+			// CORREÇÃO 2: Montamos o HTML com a Linha Principal e a Sublista juntas dentro dele
+			divContainerGasto.innerHTML = `
+			<!-- LINHA PRINCIPAL -->
+			<div class="flex items-center justify-between px-3 h-8 w-full">
+				<span class="text-right font-bold text-slate-700 min-w-[20px]">${item.dia}</span>
+				<p>&nbsp</p>
+
+				<!-- NOME (50%) -->
+				
+				<div class="w-[50%] text-[20px] font-semibold text-slate-800 truncate text-left leading-none">
+					${item.nome.charAt(0).toUpperCase() + item.nome.slice(1).toLowerCase()}
+				</div>
+
+				<!-- VALOR (30%) -->
+				
+				<div class="w-[30%] text-right text-[16px] font-bold text-slate-700 leading-none">
+					R$ ${item.valor.toFixed(2)}
+				</div>
+				<p>&nbsp</p>
+
+				<!-- AÇÕES (20%) -->
+				<div class="w-[20%] flex justify-end gap-1 items-center">
+					<!-- A Seta só aparece se houver mais de 1 detalhe cadastrado -->
+						${item.detalhes && item.detalhes.length > 1 ? `
+						<button class="btn-seta
+						               w-6 h-6
+						               flex items-center justify-center
+						               rounded-full
+						               bg-blue-600
+						               text-white
+						               text-[11px]
+						               shadow-sm
+						               transition-all">
+						  ▼
+						</button>
+					` : '<div class="w-[24px]"></div>'}
+					
+					<button onclick="excluirItem(${item.id})"
+						  class="w-5 h-5 flex items-center justify-center
+						         rounded-full
+						         border border-slate-300
+						         text-slate-500
+						         text-xs font-bold
+						         bg-red-500
+						         text-white
+						         border-red-500
+						         transition-all">
+						  X
+						</button>
+				</div>
+			</div>
+
+		<!-- SUBLISTA DE DETALHES -->
+		<div class="sublista-detalhes hidden pl-12 pb-2 pt-1 text-sm text-slate-500 flex flex-col gap-1">
+			${item.detalhes ? item.detalhes.map(d => `
+			<div class="flex justify-between w-[75%] border-l-2 border-slate-200 pl-2">
+				<span>↳ Lançamento (Dia ${d.dia})</span>
+				<span class="font-semibold">R$ ${d.valor.toFixed(2)}</span>
+			</div>
+			`).join('') : ''}
+		</div>
+		`;
+
+		// CORREÇÃO 3: Agora conseguimos achar a seta e a sublista deste item específico
+		const botaoSeta = divContainerGasto.querySelector('.btn-seta');
+		const sublista = divContainerGasto.querySelector('.sublista-detalhes');
+
+		if (botaoSeta) {
+		  botaoSeta.addEventListener('click', () => {
+			const estaEscondido = sublista.classList.contains('hidden');
+			if (estaEscondido) {
+			  sublista.classList.remove('hidden');
+			  botaoSeta.textContent = '▲';
+			} else {
+			  sublista.classList.add('hidden');
+			  botaoSeta.textContent = '▼';
+			}
+		});
+    }
+
+    // Adiciona o bloco completo configurado dentro da sua lista real na tela
+    container.appendChild(divContainerGasto);
+  }); // <--- Fechamento correto do forEach
+
+  displayTotal.innerText =
+    `R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+
+  localStorage.setItem("gastos_pro", JSON.stringify(gastos));
+}
+
+
+  function incluirPorTexto(texto) {
+
+	  const resultado = extrairNomeValor(texto);
+	  
+	  if (!resultado.valor) return alert("Diga o valor claramente.");
+	
+		const nome = resultado.nome
+	  	let valor;
+	  	valor = resultado.valor
+		const tudoCerto = confirm(`
+			Nome: ${nome}
+			Valor: ${valor}
+		
+			Está correto?
+		`);
+		if (tudoCerto) {
+			  const mesRefAtual = getMesReferencia(abaAtual);
+			  const indexExistente = gastos.findIndex(g => 
+			    g.nome.toLowerCase() === nome.toLowerCase() && 
+			    g.mesRef === mesRefAtual
+			  );
+		
+			  let valorFinal = valor;
+			  
+			if (indexExistente !== -1) {
+			
+				gastos[indexExistente].valor += valor;
+			
+				if (!gastos[indexExistente].detalhes) {
+				
+				    gastos[indexExistente].detalhes = [{
+				        idLancamento: gastos[indexExistente].id,
+				        valor: gastos[indexExistente].valor,
+				        dia: gastos[indexExistente].dia
+				    }];
+				
+				}
+
+				gastos[indexExistente].detalhes.push({
+					idLancamento: Date.now(),
+					valor: valor,
+					dia: new Date().getDate()
+				});
+			
+			} else {
+
+		
+				  gastos.unshift({
+					  id: Date.now(),
+					  nome: nome,
+					  valor: valor, // Seu valor total inicial
+					  dia: new Date().getDate(),
+					  mesRef: mesRefAtual,
+			  
+					  // Aqui entra a sua nova sublista "detalhes"
+					  detalhes: [
+					    { 
+					      idLancamento: Date.now(), 
+					      valor: valor,          // Usa a mesma variável do valor acima
+					      dia: new Date().getDate()  // Usa o mesmo dia do gasto principal
+					    }
+					  ]
+					});
+				}
+		  	renderizar();
+		}
+	}
+
+    function iniciarMicrofone() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return alert("Navegador incompatível.");
+      const r = new SR();
+      r.lang = "pt-BR";
+      r.onresult = e => incluirPorTexto(e.results[0][0].transcript);
+      r.start();
+    }
+
+    function excluirItem(id) {
+      if (confirm("Excluir este gasto?")) {
+        gastos = gastos.filter(i => i.id !== id);
+        renderizar();
+      }
+    }
+	  
+	function extrairNomeValor(frase) {
+	    // 1. Limpa a frase (remove palavras e o "R$")
+	    const limpa = frase.replace(/\b(reais|centavos|e)\b|r\s?\$/gi, '').trim();
+	
+	    // 2. Extrai os números DA FRASE LIMPA
+	    const numeros = limpa.match(/\d+/g);
+	    
+	    let reais = 0;
+	    let centavos = 0;
+	    if (numeros) {
+	        reais = parseInt(numeros[0], 10);
+	        centavos = numeros.length > 1 ? parseInt(numeros[1], 10) : 0;
+	    }
+	
+	    // 3. Extrai o nome DA FRASE LIMPA (e não da original!)
+	    const matchNome = limpa.match(/^([^\d]*)/); // ✅ Agora usa "limpa"
+	    const nome = matchNome ? matchNome[0].trim() : '';
+	
+	    const valor = reais + centavos / 100;
+	    return { nome, valor };
+	}
+
+    function editarValor(id) {
+      const novo = prompt("Novo valor:");
+      if (novo) {
+        gastos = gastos.map(i =>
+          i.id === id ? {...i, valor: parseFloat(novo.replace(",",".")) || 0} : i
+        );
+        renderizar();
+      }
+    }
+
+    renderizar();
+  </script>
+
+</body>
+</html>
