@@ -263,18 +263,18 @@ if ("serviceWorker" in navigator) {
 			divContainerGasto.innerHTML = `
 			<!-- LINHA PRINCIPAL -->
 			<div class="flex items-center justify-between px-3 h-8 w-full">
-				<span class="text-right font-bold text-slate-700 min-w-[20px]">${item.dia}</span>
+				<span class="text-right font-bold text-slate-300 min-w-[20px]">${item.dia}</span>
 				<p>&nbsp</p>
 
 				<!-- NOME (50%) -->
 				
-				<div class="w-[50%] text-[20px] font-semibold text-slate-800 truncate text-left leading-none">
+				<div class="w-[50%] text-[20px] font-semibold text-slate-300 truncate text-left leading-none">
 					${item.nome.charAt(0).toUpperCase() + item.nome.slice(1).toLowerCase()}
 				</div>
 
 				<!-- VALOR (30%) -->
 				
-				<div class="w-[30%] text-right text-[16px] font-bold text-slate-700 leading-none">
+				<div class="w-[30%] text-right text-[16px] font-bold text-slate-300 leading-none">
 					R$ ${item.valor.toFixed(2)}
 				</div>
 				<p>&nbsp</p>
@@ -312,7 +312,7 @@ if ("serviceWorker" in navigator) {
 			</div>
 
 		<!-- SUBLISTA DE DETALHES -->
-		<div class="sublista-detalhes hidden pl-12 pb-2 pt-1 text-sm text-slate-500 flex flex-col gap-1">
+		<div class="sublista-detalhes hidden pl-12 pb-2 pt-1 text-sm text-slate-300 flex flex-col gap-1">
 			${item.detalhes ? item.detalhes.map(d => `
 			<div class="flex justify-between w-[75%] border-l-2 border-slate-200 pl-2">
 				<span>↳ Lançamento (Dia ${d.dia})</span>
