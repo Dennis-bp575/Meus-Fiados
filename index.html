@@ -359,12 +359,19 @@ if ("serviceWorker" in navigator) {
 		const nome = resultado.nome
 	  	let valor;
 	  	valor = resultado.valor
+		const valorNumericoI = parseFloat(valor);
+		const valorFormatadoI = isNaN(valorNumericoI) 
+		  ? 'R$ 0,00' 
+		  : valorNumericoI.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+		
 		const tudoCerto = confirm(`
 			Nome: ${nome}
-			Valor: ${valor}
+			Valor: ${valorFormatadoI}
 		
 			Está correto?
 		`);
+
+	  
 		if (tudoCerto) {
 			  const mesRefAtual = getMesReferencia(abaAtual);
 			  const indexExistente = gastos.findIndex(g => 
@@ -449,8 +456,8 @@ if ("serviceWorker" in navigator) {
 	    }
 	
 	    // 3. Extrai o nome DA FRASE LIMPA (e não da original!)
-	    const matchNome = limpa.match(/^([^\d]*)/); // ✅ Agora usa "limpa"
-	    const nome = matchNome ? matchNome[0].trim() : '';
+	    const matchNome = limpa.match(/^([^\d]*)/);
+	    const nome = matchNome ? matchNome[0].trim().replace(/,/g, '') : '';
 	
 	    const valor = reais + centavos / 100;
 	    return { nome, valor };
