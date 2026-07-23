@@ -458,41 +458,41 @@ if ("serviceWorker" in navigator) {
 	}
 
     function editarValor(id) {
-      const novo = prompt("Novo valor:");
-      if (novo) {
-        gastos = gastos.map(i =>
-          i.id === id ? {...i, valor: parseFloat(novo.replace(",",".")) || 0} : i
-        );
-        renderizar();
-      }
+	      const novo = prompt("Novo valor:");
+	      if (novo) {
+		        gastos = gastos.map(i =>
+		          i.id === id ? {...i, valor: parseFloat(novo.replace(",",".")) || 0} : i
+		        );
+		        renderizar();
+	      }
     }
 
 	function mostrarConfirmacaoCustomizada(nome, valorFormatado) {
 		  return new Promise((resolve) => {
-		    const modal = document.getElementById('customModal');
-		    const txtNome = document.getElementById('modalNome');
-		    const txtValor = document.getElementById('modalValor');
-		    const btnConfirmar = document.getElementById('btnModalConfirmar');
-		    const btnCancelar = document.getElementById('btnModalCancelar');
-		
-		    // Injeta os dados formatados no modal
-		    txtNome.textContent = nome;
-		    txtValor.textContent = valorFormatado;
-		
-		    // Exibe o modal removendo a classe 'hidden'
-		    modal.classList.remove('hidden');
-		
-		    // Se clicar em confirmar
-		    btnConfirmar.onclick = () => {
-		      modal.classList.add('hidden');
-		      resolve(true);
-		    };
-		
-		    // Se clicar em cancelar
-		    btnCancelar.onclick = () => {
-		      modal.classList.add('hidden');
-		      resolve(false);
-		    };
+			    const modal = document.getElementById('customModal');
+			    const txtNome = document.getElementById('modalNome');
+			    const txtValor = document.getElementById('modalValor');
+			    const btnConfirmar = document.getElementById('btnModalConfirmar');
+			    const btnCancelar = document.getElementById('btnModalCancelar');
+			
+			    // Injeta os dados formatados no modal
+			    txtNome.textContent = nome;
+			    txtValor.textContent = valorFormatado;
+			
+			    // Exibe o modal removendo a classe 'hidden'
+			    modal.classList.remove('hidden');
+			
+			    // Se clicar em confirmar
+			    btnConfirmar.onclick = () => {
+			      modal.classList.add('hidden');
+			      resolve(true);
+			    };
+			
+			    // Se clicar em cancelar
+			    btnCancelar.onclick = () => {
+			      modal.classList.add('hidden');
+			      resolve(false);
+			    };
 		  });
 	}
 
@@ -502,27 +502,27 @@ if ("serviceWorker" in navigator) {
 
 	<!-- Fundo escurecido do Modal (Escondido por padrão com 'hidden') -->
 	<div id="customModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden">
-	  <!-- Caixa do Popup -->
-	  <div class="bg-[#202024] border border-gray-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center">
-	    <!-- Cabeçalho com o nome do seu App -->
-	    <h3 class="text-[#8D8D99] text-xs font-bold uppercase tracking-widest mb-4">Meus Fiados diz:</h3>
-	    
-	    <!-- Corpo com os dados do cliente -->
-	    <div class="text-left bg-[#1A1A1E] p-4 rounded-xl mb-6 space-y-2 border border-gray-800">
-	      <p class="text-gray-400 text-sm">Nome: <span id="modalNome" class="text-white font-semibold text-base"></span></p>
-	      <p class="text-gray-400 text-sm">Valor: <span id="modalValor" class="text-[#00B37E] font-bold text-lg"></span></p>
-	    </div>
-	
-	    <!-- Botões de Ação -->
-	    <div class="flex gap-3">
-	      <button id="btnModalCancelar" class="w-1/2 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-xl transition">
-	        Refazer
-	      </button>
-	      <button id="btnModalConfirmar" class="w-1/2 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-900/20">
-	        Confirmar
-	      </button>
-	    </div>
-	  </div>
+		  <!-- Caixa do Popup -->
+		  <div class="bg-[#202024] border border-gray-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center">
+			    <!-- Cabeçalho com o nome do seu App -->
+			    <h3 class="text-[#8D8D99] text-xs font-bold uppercase tracking-widest mb-4">Meus Fiados diz:</h3>
+		    
+			    <!-- Corpo com os dados do cliente -->
+			    <div class="text-left bg-[#1A1A1E] p-4 rounded-xl mb-6 space-y-2 border border-gray-800">
+				      <p class="text-gray-400 text-sm">Nome: <span id="modalNome" class="text-white font-semibold text-base"></span></p>
+				      <p class="text-gray-400 text-sm">Valor: <span id="modalValor" class="text-[#00B37E] font-bold text-lg"></span></p>
+			    </div>
+		
+			    <!-- Botões de Ação -->
+			    <div class="flex gap-3">
+				      <button id="btnModalCancelar" class="w-1/2 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-xl transition">
+				        Refazer
+				      </button>
+				      <button id="btnModalConfirmar" class="w-1/2 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-bold rounded-xl transition shadow-lg shadow-emerald-900/20">
+				        Confirmar
+				      </button>
+			    </div>
+		  </div>
 	</div>
 
 
