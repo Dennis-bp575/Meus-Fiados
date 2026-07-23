@@ -218,8 +218,7 @@ if ("serviceWorker" in navigator) {
 		  <!-- Caixa do Popup -->
 		  <div class="bg-[#202024] border border-gray-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center">
 			    <!-- Cabeçalho com o nome do seu App -->
-			    <h3 class="text-[#8D8D99] text-xs font-bold uppercase tracking-widest mb-4">Meus Fiados diz:</h3>
-		    
+		    	<h3 id="modalTitulo" class="text-[#8D8D99] text-xs font-bold uppercase tracking-widest mb-4">Meus Fiados diz:</h3>
 			    <!-- Corpo com os dados do cliente -->
 			    <div class="text-left bg-[#1A1A1E] p-4 rounded-xl mb-6 space-y-2 border border-gray-800">
 				      <p class="text-gray-400 text-sm">Nome: <span id="modalNome" class="text-white font-semibold text-base"></span></p>
@@ -459,6 +458,28 @@ if ("serviceWorker" in navigator) {
         renderizar();
       }
     }
+
+	// Certifique-se de colocar 'async' na sua função de deletar/quitar
+	async function quitarCliente(nomeCliente, valorTotalCliente) {
+	  
+		  // Formata o valor para exibir bonito no popup
+		  const valorFormatado = valorTotalCliente.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+		
+		  // Chama o mesmo modal, mas muda o cabeçalho para avisar o dono do bar
+		  const confirmou = await mostrarConfirmacaoCustomizada(
+		    nomeCliente, 
+		    valorFormatado, 
+		    "⚠️ CONFIRMAR PAGAMENTO TOTAL?"
+		  );
+		
+		  if (confirmou) {
+		    gastos = gastos.filter(i => i.id !== id);
+        	renderizar();
+		  } 
+	}
+
+
+
 	  
 	function extrairNomeValor(frase) {
 	    // 1. Limpa a frase (remove palavras e o "R$")
@@ -492,34 +513,34 @@ if ("serviceWorker" in navigator) {
 	      }
     }
 
-	function mostrarConfirmacaoCustomizada(nome, valorFormatado) {
-		  return new Promise((resolve) => {
-			    const modal = document.getElementById('customModal');
-			    const txtNome = document.getElementById('modalNome');
-			    const txtValor = document.getElementById('modalValor');
-			    const btnConfirmar = document.getElementById('btnModalConfirmar');
-			    const btnCancelar = document.getElementById('btnModalCancelar');
-			
-			    // Injeta os dados formatados no modal
-			    txtNome.textContent = nome;
-			    txtValor.textContent = valorFormatado;
-			
-			    // Exibe o modal removendo a classe 'hidden'
-			    modal.classList.remove('hidden');
-			
-			    // Se clicar em confirmar
-			    btnConfirmar.onclick = () => {
-			      modal.classList.add('hidden');
-			      resolve(true);
-			    };
-			
-			    // Se clicar em cancelar
-			    btnCancelar.onclick = () => {
-			      modal.classList.add('hidden');
-			      resolve(false);
-			    };
+	function mostrarConfirmacaoCustomizada(nome, valorFormatado, titulo = "Meus Fiados diz:") {
+		    return new Promise((resolve) => {
+		    const modal = document.getElementById('customModal');
+		    const txtTitulo = document.getElementById('modalTitulo'); // Pegando o novo ID
+		    const txtNome = document.getElementById('modalNome');
+		    const txtValor = document.getElementById('modalValor');
+		    const btnConfirmar = document.getElementById('btnModalConfirmar');
+		    const btnCancelar = document.getElementById('btnModalCancelar');
+		
+		    // Injeta os dados dinamicamente
+		    txtTitulo.textContent = titulo;
+		    txtNome.textContent = nome;
+		    txtValor.textContent = valorFormatado;
+		
+		    modal.classList.remove('hidden');
+		
+		    btnConfirmar.onclick = () => {
+		      modal.classList.add('hidden');
+		      resolve(true);
+		    };
+		
+		    btnCancelar.onclick = () => {
+		      modal.classList.add('hidden');
+		      resolve(false);
+		    };
 		  });
 	}
+
 
 	  
     renderizar();
