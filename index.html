@@ -629,37 +629,22 @@ if ("serviceWorker" in navigator) {
 	}
 
 	async function sincronizarComANuvem() {
-	    // 1. Pega a chave que está salva no aparelho do usuário atual
 	    let chaveUsuario = localStorage.getItem('meu_id_servidor');
 	    if (!chaveUsuario) return;
 	
-	    // 2. Desmonta a chave para achar o ID puro do banco e o sufixo secreto
 	    let partes = chaveUsuario.split('-');
-	    let prefixo = partes[0]; // 'adm' ou 'use'
-	    let idBanco = `${partes[1]}-${partes[2]}`; // O número central ex: '87363-92736'
+	    let prefixo = partes[0];
+	    let idBanco = `${partes[1]}-${partes[2]}`;
 	    
-	    let sufixoSecreto = "";
+	    let sufixoSecreto = (prefixo === "adm" && partes.length === 4) ? partes[3] : "D5X";
 	
-	    // Se quem estiver salvando for o Seu Zé (adm), nós pescamos o sufixo direto da chave dele
-	    if (prefixo === "adm" && partes.length === 4) {
-	        sufixoSecreto = partes[3];
-	    } 
-	    // Se for a funcionária (use), ela não tem o sufixo na chave dela. 
-	    // Então precisamos buscar qual era o sufixo antigo que já estava salvo localmente na memória (se você guardou)
-	    // Para simplificar e garantir que a senha não mude, o Supabase aceita atualizar apenas o campo 'dados'
-	    
-	    // 3. Como precisamos manter a 'senha_adm' trancada dentro do JSON, 
-	    // nós primeiro montamos a estrutura do pacote com os gastos atuais do app
 	    let pacoteAtualizado = {
-	        senha_adm: sufixoSecreto || "D5X", // Se for a funcionária, mantemos o padrão ou pegamos de uma variável global
-	        clientes_e_fiados: gastos // Sua variável global pura com todas as alterações!
+	        senha_adm: sufixoSecreto,
+	        clientes_e_fiados: gastos
 	    };
 	
-	    // Se for o modo funcionária salvando, para não correr o risco de ela sobrescrever ou inventar 
-	    // uma 'senha_adm' errada, nós podemos fazer o POST enviando apenas os gastos atualizados.
-	    // Mas o jeito mais seguro para o 'upsert' do Supabase via HTTP funcionar redondo é enviar o bloco completo.
-	
-	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado`;
+	    // URL CORRIGIDA COM O FILTRO DE CONFLITO:
+	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?on_conflict=user_id`;
 	
 	    try {
 	        const resposta = await fetch(url, {
@@ -668,7 +653,7 @@ if ("serviceWorker" in navigator) {
 	                "apikey": SUPABASE_KEY,
 	                "Authorization": `Bearer ${SUPABASE_KEY}`,
 	                "Content-Type": "application/json",
-	                "Prefer": "resolution=merge-duplicates" // Atualiza a linha se o user_id (idBanco) já existir
+	                "Prefer": "resolution=merge-duplicates, return=minimal"
 	            },
 	            body: JSON.stringify({
 	                user_id: idBanco,
@@ -677,16 +662,15 @@ if ("serviceWorker" in navigator) {
 	        });
 	
 	        if (!resposta.ok) {
-	            throw new Error(`Erro no servidor: ${resposta.status}`);
+	            const textoErro = await resposta.text();
+	            throw new Error(textoErro);
 	        }
 	
-	        console.log("☁️ Sincronização com a nuvem realizada com sucesso!");
+	        console.log("☁️ Sincronização automática via HTTP realizada!");
 	    } catch (erro) {
-	        console.error("❌ Falha ao sincronizar com o Supabase:", erro.message);
-	        // O dado continua salvo no localStorage do aparelho como plano B, então o Seu Zé não perde nada!
+	        console.error("❌ Falha na sincronização automática:", erro.message);
 	    }
 	}
-
 
 	// Função auxiliar para gerar 3 caracteres aleatórios (letras maiúsculas e números)
 	function gerarSufixoSecreto() {
@@ -787,7 +771,8 @@ if ("serviceWorker" in navigator) {
 	}
 
 	async function salvarDadosNaNuvemHTTP(idBanco, pacoteDados) {
-	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado`;
+	    // ATENÇÃO À URL CORRIGIDA COM O CONFLITO:
+	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?on_conflict=user_id`;
 	
 	    const resposta = await fetch(url, {
 	        method: "POST",
@@ -795,7 +780,7 @@ if ("serviceWorker" in navigator) {
 	            "apikey": SUPABASE_KEY,
 	            "Authorization": `Bearer ${SUPABASE_KEY}`,
 	            "Content-Type": "application/json",
-	            "Prefer": "resolution=merge-duplicates" // Diz para atualizar se o user_id já existir
+	            "Prefer": "resolution=merge-duplicates, return=minimal" // Garante o Upsert perfeito
 	        },
 	        body: JSON.stringify({
 	            user_id: idBanco,
@@ -804,9 +789,14 @@ if ("serviceWorker" in navigator) {
 	    });
 	
 	    if (!resposta.ok) {
-	        console.error("Erro ao salvar dados na nuvem");
+	        // Se der erro, joga o texto real do erro no console para sabermos o motivo!
+	        const textoErro = await resposta.text();
+	        console.error("Erro crítico ao salvar no Supabase:", textoErro);
+	        alert("Erro ao criar o banco na nuvem. Verifique o console.");
+	        return false;
 	    } else {
-	        console.log("Sincronizado com sucesso via HTTP!");
+	        console.log("☁️ Banco criado/atualizado com sucesso na nuvem!");
+	        return true;
 	    }
 	}
 
