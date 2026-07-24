@@ -617,7 +617,7 @@ if ("serviceWorker" in navigator) {
 	    if (!idUsuario) return;
 	
 	    // Atualiza a linha do Seu Zé com o pacote de gastos atualizado
-	    const { error } = await supabase
+	    const { error } = await supabaseClient
 	        .from('historico_fiado')
 	        .update({ dados: gastos })
 	        .eq('user_id', idUsuario);
@@ -654,7 +654,7 @@ if ("serviceWorker" in navigator) {
 	        };
 	
 	        // Salva a linha virgem lá no Supabase usando o ID Base como user_id
-	        await supabase.from('historico_fiado').insert({ 
+	        await supabaseClient.from('historico_fiado').insert({ 
 	            user_id: idBase, 
 	            dados: estruturaInicial 
 	        });
