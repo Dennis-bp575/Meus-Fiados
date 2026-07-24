@@ -764,7 +764,7 @@ if ("serviceWorker" in navigator) {
 
 	async function salvarDadosNaNuvemHTTP(idBanco, pacoteDados) {
 	    // ATENÇÃO À URL CORRIGIDA COM O CONFLITO:
-	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado`;
+	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?on_conflict=user_id`;
 	
 	    const resposta = await fetch(url, {
 	        method: "POST",
