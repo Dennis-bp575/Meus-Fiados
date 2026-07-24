@@ -275,7 +275,7 @@ if ("serviceWorker" in navigator) {
 			    </div>
 		  </div>
 	</div>
-	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	 <!--// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> -->
 	
   <script>
 	const SUPABASE_URL = 'https://zqdjkazwinzmmtwgpycn.supabase.co';
@@ -696,10 +696,10 @@ if ("serviceWorker" in navigator) {
 	}
 
 
-	  
-	  
-	  // O final do seu arquivo de script agora apenas dispara o início do fluxo da nuvem
-	iniciarAplicativo();
+	window.addEventListener('DOMContentLoaded', () => {
+	    console.log("Todos os scripts carregados! Iniciando o motor do Seu Zé.");
+	    iniciarAplicativo();
+	});
 
     // renderizar();
   </script>
