@@ -683,38 +683,26 @@ if ("serviceWorker" in navigator) {
 	}
 
 	function configurarBotoesModal() {
-	    
 	    // AÇÃO 1: CRIAR NOVO BANCO (Gera chaves e envia via POST)
 	    document.getElementById('btn-criar-banco').onclick = async () => {
 	        // 1. Gera os IDs aleatórios e o segredo de 3 dígitos
 	        let idBase = gerarIdAleatorio();       // Ex: 87363-92736
 	        let sufixo = gerarSufixoSecreto();    // Ex: D5X
 	        let chaveFinalADM = `adm-${idBase}-${sufixo}`;
-	
 	        // 2. Monta o pacote de dados inicial que vai para o cofre do JSON
 	        let estruturaInicial = {
 	            senha_adm: sufixo,
 	            clientes_e_fiados: []
 	        };
-	
-	       // 1. Tenta salvar na nuvem primeiro
-			
-			
-			
-			// 3. Desativa o botão temporariamente para o Seu Zé não clicar duas vezes
 	        const btnCriar = document.getElementById('btn-criar-banco');
 	        btnCriar.disabled = true;
 	        btnCriar.innerText = "Criando banco na nuvem...";
-	
 	        // 4. Envia para o Supabase usando a nossa nova função HTTP com Fetch
 	        await salvarDadosNaNuvemHTTP(idBase, estruturaInicial);
-	
 	        // 5. Salva a chave ADM completa no LocalStorage do celular dele
 	        localStorage.setItem('meu_id_servidor', chaveFinalADM);
-	
 	        // 6. Esconde o modal inicial do Tailwind
 	        document.getElementById('modal-inicial').classList.add('hidden');
-	
 	        // 7. Exibe o aviso importante para ele anotar a chave
 	        alert(`IMPORTANTE, Seu Zé!\nSua chave de recuperação é:\n\n${chaveFinalADM}\n\nAnotou? Clique em OK para começar.`);
 	
@@ -776,7 +764,7 @@ if ("serviceWorker" in navigator) {
 
 	async function salvarDadosNaNuvemHTTP(idBanco, pacoteDados) {
 	    // ATENÇÃO À URL CORRIGIDA COM O CONFLITO:
-	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?on_conflict=user_id`;
+	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado`;
 	
 	    const resposta = await fetch(url, {
 	        method: "POST",
