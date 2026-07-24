@@ -697,7 +697,11 @@ if ("serviceWorker" in navigator) {
 	            clientes_e_fiados: []
 	        };
 	
-	        // 3. Desativa o botão temporariamente para o Seu Zé não clicar duas vezes
+	       // 1. Tenta salvar na nuvem primeiro
+			
+			
+			
+			// 3. Desativa o botão temporariamente para o Seu Zé não clicar duas vezes
 	        const btnCriar = document.getElementById('btn-criar-banco');
 	        btnCriar.disabled = true;
 	        btnCriar.innerText = "Criando banco na nuvem...";
