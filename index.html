@@ -280,7 +280,7 @@ if ("serviceWorker" in navigator) {
 	const SUPABASE_URL = 'https://zqdjkazwinzmmtwgpycn.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_s3vcDX41fY9DA48qO8k80g_cZTOckMg';
 	// Inicializa o cliente do Supabase globalmente
-	const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+	const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 	  
     let abaAtual = 0;
     let gastos = []
