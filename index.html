@@ -654,66 +654,70 @@ if ("serviceWorker" in navigator) {
 	}
 
 	function configurarBotoesModal() {
-	    // AÇÃO 1: CRIAR NOVO BANCO
+	    
+	    // AÇÃO 1: CRIAR NOVO BANCO (Gera chaves e envia via POST)
 	    document.getElementById('btn-criar-banco').onclick = async () => {
-	        // Gera o ID administrativo completo com os 3 caracteres aleatórios
-	        let idBase = gerarIdAleatorio(); // Função FIADO-XXXXX-XXXXX
-	        let sufixo = gerarSufixoSecreto(); // Função D5X
-	        let chaveCompletaADM = `${idBase}-${sufixo}`; // adm-XXXXX-XXXXX-D5X (nós podemos adicionar o 'adm-' no começo na hora de salvar)
-	        
-	        let chaveFinal = `adm-${chaveCompletaADM}`;
+	        // 1. Gera os IDs aleatórios e o segredo de 3 dígitos
+	        let idBase = gerarIdAleatorio();       // Ex: 87363-92736
+	        let sufixo = gerarSufixoSecreto();    // Ex: D5X
+	        let chaveFinalADM = `adm-${idBase}-${sufixo}`;
 	
-	        // Cria a estrutura do JSON zerada, já injetando a senha de 3 dígitos lá dentro
+	        // 2. Monta o pacote de dados inicial que vai para o cofre do JSON
 	        let estruturaInicial = {
 	            senha_adm: sufixo,
 	            clientes_e_fiados: []
 	        };
 	
-	        // Salva a linha virgem lá no Supabase usando o ID Base como user_id
-	        await supabaseClient.from('historico_fiado').insert({ 
-	            user_id: idBase, 
-	            dados: estruturaInicial 
-	        });
+	        // 3. Desativa o botão temporariamente para o Seu Zé não clicar duas vezes
+	        const btnCriar = document.getElementById('btn-criar-banco');
+	        btnCriar.disabled = true;
+	        btnCriar.innerText = "Criando banco na nuvem...";
 	
-	        // Grava no LocalStorage do aparelho do Seu Zé
-	        localStorage.setItem('meu_id_servidor', chaveFinal);
+	        // 4. Envia para o Supabase usando a nossa nova função HTTP com Fetch
+	        await salvarDadosNaNuvemHTTP(idBase, estruturaInicial);
 	
-	        // Fecha o modal escondendo ele novamente
+	        // 5. Salva a chave ADM completa no LocalStorage do celular dele
+	        localStorage.setItem('meu_id_servidor', chaveFinalADM);
+	
+	        // 6. Esconde o modal inicial do Tailwind
 	        document.getElementById('modal-inicial').classList.add('hidden');
 	
-	        // Mostra um novo alerta/popup forçando o Seu Zé a ver a chave dele
-	        alert(`IMPORTANTE, Seu Zé!\nSua chave de recuperação é:\n\n${chaveFinal}\n\nAnotou? Clique em OK para começar.`);
+	        // 7. Exibe o aviso importante para ele anotar a chave
+	        alert(`IMPORTANTE, Seu Zé!\nSua chave de recuperação é:\n\n${chaveFinalADM}\n\nAnotou? Clique em OK para começar.`);
 	
-	        // Alimenta a variável global e desenha a tela bonita vazia igual ao seu print!
+	        // 8. Reinicia o estado do app limpo e desenha a tela preta com R$ 0,00
 	        gastos = [];
 	        renderizar();
 	    };
 	
-	    // AÇÃO 2: MOSTRAR CAMPO DE RECUPERAÇÃO
+	    // AÇÃO 2: MOSTRAR O CAMPO DE DIGITAR A CHAVE ANTIGA
 	    document.getElementById('btn-abrir-recuperar').onclick = () => {
-	        // Revela a caixinha de texto oculta para ele digitar a chave antiga
 	        document.getElementById('campo-recuperacao').classList.remove('hidden');
 	    };
 	
-	    // AÇÃO 3: CONFIRMAR RECUPERAÇÃO E PUXAR DADOS DA NUVEM
+	    // AÇÃO 3: CONFIRMAR RECUPERAÇÃO DA CHAVE ANTIGA
 	    document.getElementById('btn-confirmar-recuperar').onclick = async () => {
-	        let chaveDigitada = document.getElementById('input-chave-antiga').value.trim().toLowerCase();
+	        let chaveDigitada = document.getElementById('input-chave-antiga').value.trim();
 	
 	        if (!chaveDigitada) {
-	            alert("Digite a sua chave para continuar!");
+	            alert("Por favor, digite a sua chave!");
 	            return;
 	        }
 	
-	        // Salva a chave digitada no LocalStorage do celular novo
-	        localStorage.setItem('meu_id_servidor', chaveDigitada);
+	        // Transforma em minúsculo para evitar erros se o Seu Zé digitar "ADM-" ou "USE-"
+	        let chaveFormatada = chaveDigitada.toLowerCase();
+	
+	        // Salva a chave no LocalStorage do aparelho novo
+	        localStorage.setItem('meu_id_servidor', chaveFormatada);
 	        
-	        // Esconde o modal e força o app a recarregar buscando as informações da internet
+	        // Esconde o modal
 	        document.getElementById('modal-inicial').classList.add('hidden');
 	        
-	        // Reinicia o app, que agora vai achar a chave no LocalStorage e rodar o fluxo de baixar os dados!
+	        // Reinicia o fluxo do aplicativo, que agora vai ler essa chave e dar o fetch na nuvem
 	        iniciarAplicativo(); 
 	    };
 	}
+
 
 	async function buscarDadosDaNuvemHTTP(idBanco) {
 	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?user_id=eq.${idBanco}&select=dados`;
