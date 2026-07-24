@@ -246,7 +246,49 @@ if ("serviceWorker" in navigator) {
 	const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 	  
     let abaAtual = 0;
-    let gastos = JSON.parse(localStorage.getItem("meu_fiado")) || [];
+    let gastos = []
+
+	// Função principal que roda assim que o app abre
+	async function iniciarAplicativo() {
+	    let idUsuario = localStorage.getItem('meu_id_servidor');
+	    if (!idUsuario) {
+	        let idUnicoEncontrado = false;
+	        // Loop para garantir que a ID gerada não existe na nuvem de mais ninguém
+	        while (!idUnicoEncontrado) {
+	            idUsuario = gerarIdAleatorio();
+	            // Pergunta no Supabase se já existe uma linha com essa ID
+	            const { data } = await supabase
+	                .from('historico_fiado')
+	                .select('user_id')
+	                .eq('user_id', idUsuario)
+	                .maybeSingle();
+	            if (!data) {
+	                idUnicoEncontrado = true;
+	            }
+	        }
+	        // Salva a nova ID no LocalStorage do celular dele para os próximos acessos
+	        localStorage.setItem('meu_id_servidor', idUsuario);
+	        // Como é o primeiro acesso, o banco na nuvem está vazio
+	        gastos = []; 
+	        // Criamos a primeira linha dele vazia na nuvem para garantir o espaço
+	        await supabase.from('historico_fiado').insert({ user_id: idUsuario, dados: [] });
+	        // AQUI: Você exibe o seu modal ou alerta do Tailwind para o Seu Zé copiar a ID
+	        mostrarAlertaCopiaSegura(idUsuario);
+	
+	    } else {
+	        // 3. SE JÁ TINHA ID, puxamos o "pacotão" de dados da nuvem
+	        const { data, error } = await supabase
+	            .from('historico_fiado')
+	            .select('dados')
+	            .eq('user_id', idUsuario)
+	            .maybeSingle();
+	            gastos = data.dados; // Alimenta a variável
+	    }
+	
+	    // 4. Executa a sua função grande que desenha a tela com o Tailwind
+	    renderizar();
+	}
+
 
     function getMesReferencia(offset) {
       const d = new Date();
@@ -545,10 +587,17 @@ if ("serviceWorker" in navigator) {
 		    };
 		  });
 	}
+	// Função para gerar um ID aleatório simples (Ex: FIADO-12345-67890)
+	function gerarIdAleatorio() {
+		const num1 = Math.floor(10000 + Math.random() * 90000);
+		const num2 = Math.floor(10000 + Math.random() * 90000);
+		return `FIADO-${num1}-${num2}`;
+	}
 
+	  // O final do seu arquivo de script agora apenas dispara o início do fluxo da nuvem
+	iniciarAplicativo();
 
-	  
-    renderizar();
+    // renderizar();
   </script>
 
 
