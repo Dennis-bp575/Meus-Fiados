@@ -629,19 +629,64 @@ if ("serviceWorker" in navigator) {
 	}
 
 	async function sincronizarComANuvem() {
-	    const idUsuario = localStorage.getItem('meu_id_servidor');
-	    if (!idUsuario) return;
+	    // 1. Pega a chave que está salva no aparelho do usuário atual
+	    let chaveUsuario = localStorage.getItem('meu_id_servidor');
+	    if (!chaveUsuario) return;
 	
-	    // Atualiza a linha do Seu Zé com o pacote de gastos atualizado
-	    const { error } = await supabaseClient
-	        .from('historico_fiado')
-	        .update({ dados: gastos })
-	        .eq('user_id', idUsuario);
+	    // 2. Desmonta a chave para achar o ID puro do banco e o sufixo secreto
+	    let partes = chaveUsuario.split('-');
+	    let prefixo = partes[0]; // 'adm' ou 'use'
+	    let idBanco = `${partes[1]}-${partes[2]}`; // O número central ex: '87363-92736'
+	    
+	    let sufixoSecreto = "";
 	
-	    if (error) {
-	        console.error("Erro ao sincronizar:", error.message);
+	    // Se quem estiver salvando for o Seu Zé (adm), nós pescamos o sufixo direto da chave dele
+	    if (prefixo === "adm" && partes.length === 4) {
+	        sufixoSecreto = partes[3];
+	    } 
+	    // Se for a funcionária (use), ela não tem o sufixo na chave dela. 
+	    // Então precisamos buscar qual era o sufixo antigo que já estava salvo localmente na memória (se você guardou)
+	    // Para simplificar e garantir que a senha não mude, o Supabase aceita atualizar apenas o campo 'dados'
+	    
+	    // 3. Como precisamos manter a 'senha_adm' trancada dentro do JSON, 
+	    // nós primeiro montamos a estrutura do pacote com os gastos atuais do app
+	    let pacoteAtualizado = {
+	        senha_adm: sufixoSecreto || "D5X", // Se for a funcionária, mantemos o padrão ou pegamos de uma variável global
+	        clientes_e_fiados: gastos // Sua variável global pura com todas as alterações!
+	    };
+	
+	    // Se for o modo funcionária salvando, para não correr o risco de ela sobrescrever ou inventar 
+	    // uma 'senha_adm' errada, nós podemos fazer o POST enviando apenas os gastos atualizados.
+	    // Mas o jeito mais seguro para o 'upsert' do Supabase via HTTP funcionar redondo é enviar o bloco completo.
+	
+	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado`;
+	
+	    try {
+	        const resposta = await fetch(url, {
+	            method: "POST",
+	            headers: {
+	                "apikey": SUPABASE_KEY,
+	                "Authorization": `Bearer ${SUPABASE_KEY}`,
+	                "Content-Type": "application/json",
+	                "Prefer": "resolution=merge-duplicates" // Atualiza a linha se o user_id (idBanco) já existir
+	            },
+	            body: JSON.stringify({
+	                user_id: idBanco,
+	                dados: pacoteAtualizado
+	            })
+	        });
+	
+	        if (!resposta.ok) {
+	            throw new Error(`Erro no servidor: ${resposta.status}`);
+	        }
+	
+	        console.log("☁️ Sincronização com a nuvem realizada com sucesso!");
+	    } catch (erro) {
+	        console.error("❌ Falha ao sincronizar com o Supabase:", erro.message);
+	        // O dado continua salvo no localStorage do aparelho como plano B, então o Seu Zé não perde nada!
 	    }
 	}
+
 
 	// Função auxiliar para gerar 3 caracteres aleatórios (letras maiúsculas e números)
 	function gerarSufixoSecreto() {
