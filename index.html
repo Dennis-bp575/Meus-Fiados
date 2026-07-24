@@ -291,20 +291,44 @@ if ("serviceWorker" in navigator) {
     let gastos = []
 
 	async function iniciarAplicativo() {
-	    let chaveUsuario = localStorage.getItem('meu_id_servidor');
-	    // SE NÃO ENCONTRAR A CHAVE LOCAL...
+	    let chaveUsuario = localStorage.getItem('meu_id_servidor'); // Ex: adm-87363-92736-D5X
+	
 	    if (!chaveUsuario) {
-	        // Exibe o modal inicial removendo a classe 'hidden' do Tailwind
+	        // Mostra o modal cinza escuro do Tailwind removendo o 'hidden'
 	        document.getElementById('modal-inicial').classList.remove('hidden');
-	        // Travamos a execução aqui. O app fica esperando os cliques nos botões do modal!
-	        configurarBotoesModal();
-	        return; 
+	        configurarBotoesModalHTTP();
+	        return;
 	    }
-	    // Se já tiver a chave, segue o fluxo normal que criamos antes (busca na nuvem, valida se é adm/use...)
-	    processarChaveExistente(chaveUsuario);
+	
+	    let partes = chaveUsuario.split('-');
+	    let prefixo = partes[0];
+	    let idBanco = `${partes[1]}-${partes[2]}`;
+	    let sufixoDigitado = partes[3] || "";
+	
+	    // Puxa o pacote usando a nossa nova função fetch limpa
+	    let pacoteNuvem = await buscarDadosDaNuvemHTTP(idBanco);
+	
+	    if (!pacoteNuvem) {
+	        gastos = [];
+	    } else {
+	        // Validação de administrador contra a funcionária espertinha
+	        if (prefixo === "adm") {
+	            if (sufixoDigitado !== pacoteNuvem.senha_adm) {
+	                alert("Chave de Administrador inválida!");
+	                localStorage.removeItem('meu_id_servidor');
+	                window.location.reload();
+	                return;
+	            }
+	            gastos = pacoteNuvem.clientes_e_fiados;
+	        } else {
+	            // Modo caixa funcionária
+	            gastos = pacoteNuvem.clientes_e_fiados;
+	            // Aqui você esconde os relatórios do Seu Zé com o Tailwind
+	        }
+	    }
+	
+	    renderizar();
 	}
-	  
-
 
 
 
@@ -699,6 +723,53 @@ if ("serviceWorker" in navigator) {
 	    };
 	}
 
+	async function buscarDadosDaNuvemHTTP(idBanco) {
+	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?user_id=eq.${idBanco}&select=dados`;
+	
+	    const resposta = await fetch(url, {
+	        method: "GET",
+	        headers: {
+	            "apikey": SUPABASE_KEY,
+	            "Authorization": `Bearer ${SUPABASE_KEY}`
+	        }
+	    });
+	
+	    if (!resposta.ok) {
+	        console.error("Erro ao buscar dados na nuvem");
+	        return null;
+	    }
+	
+	    const dadosRecebidos = await resposta.json();
+	    
+	    // Como o select retorna uma lista, pegamos o primeiro item se existir
+	    return dadosRecebidos.length > 0 ? dadosRecebidos[0].dados : null;
+	}
+
+	async function salvarDadosNaNuvemHTTP(idBanco, pacoteDados) {
+	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado`;
+	
+	    const resposta = await fetch(url, {
+	        method: "POST",
+	        headers: {
+	            "apikey": SUPABASE_KEY,
+	            "Authorization": `Bearer ${SUPABASE_KEY}`,
+	            "Content-Type": "application/json",
+	            "Prefer": "resolution=merge-duplicates" // Diz para atualizar se o user_id já existir
+	        },
+	        body: JSON.stringify({
+	            user_id: idBanco,
+	            dados: pacoteDados
+	        })
+	    });
+	
+	    if (!resposta.ok) {
+	        console.error("Erro ao salvar dados na nuvem");
+	    } else {
+	        console.log("Sincronizado com sucesso via HTTP!");
+	    }
+	}
+
+	  
 
 	window.addEventListener('DOMContentLoaded', () => {
 	    console.log("Todos os scripts carregados! Iniciando o motor do Seu Zé.");
