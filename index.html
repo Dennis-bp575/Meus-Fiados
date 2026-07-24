@@ -420,6 +420,7 @@ if ("serviceWorker" in navigator) {
     `R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
 
   localStorage.setItem("meu_fiado", JSON.stringify(gastos));
+  sincronizarComANuvem();
 }
 
 
@@ -594,6 +595,23 @@ if ("serviceWorker" in navigator) {
 		return `FIADO-${num1}-${num2}`;
 	}
 
+	async function sincronizarComANuvem() {
+	    const idUsuario = localStorage.getItem('meu_id_servidor');
+	    if (!idUsuario) return;
+	
+	    // Atualiza a linha do Seu Zé com o pacote de gastos atualizado
+	    const { error } = await supabase
+	        .from('historico_fiado')
+	        .update({ dados: gastos })
+	        .eq('user_id', idUsuario);
+	
+	    if (error) {
+	        console.error("Erro ao sincronizar:", error.message);
+	    }
+	}
+
+
+	  
 	  // O final do seu arquivo de script agora apenas dispara o início do fluxo da nuvem
 	iniciarAplicativo();
 
