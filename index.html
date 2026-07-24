@@ -284,7 +284,7 @@ if ("serviceWorker" in navigator) {
 
 	async function iniciarAplicativo() {
 	    let chaveUsuario = localStorage.getItem('meu_id_servidor'); // Ex: adm-87363-92736-D5X
-	
+	console.log(chaveUsuario);
 	    if (!chaveUsuario) {
 	        // Mostra o modal cinza escuro do Tailwind removendo o 'hidden'
 	        document.getElementById('modal-inicial').classList.remove('hidden');
