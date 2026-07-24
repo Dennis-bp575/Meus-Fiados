@@ -283,46 +283,22 @@ if ("serviceWorker" in navigator) {
     let abaAtual = 0;
     let gastos = []
 
-	// Função principal que roda assim que o app abre
 	async function iniciarAplicativo() {
-	    let idUsuario = localStorage.getItem('meu_id_servidor');
-	    if (!idUsuario) {
-	        let idUnicoEncontrado = false;
-	        // Loop para garantir que a ID gerada não existe na nuvem de mais ninguém
-	        while (!idUnicoEncontrado) {
-	            idUsuario = gerarIdAleatorio();
-	            // Pergunta no Supabase se já existe uma linha com essa ID
-	            const { data } = await supabase
-	                .from('historico_fiado')
-	                .select('user_id')
-	                .eq('user_id', idUsuario)
-	                .maybeSingle();
-	            if (!data) {
-	                idUnicoEncontrado = true;
-	            }
-	        }
-	        // Salva a nova ID no LocalStorage do celular dele para os próximos acessos
-	        localStorage.setItem('meu_id_servidor', idUsuario);
-	        // Como é o primeiro acesso, o banco na nuvem está vazio
-	        gastos = []; 
-	        // Criamos a primeira linha dele vazia na nuvem para garantir o espaço
-	        await supabase.from('historico_fiado').insert({ user_id: idUsuario, dados: [] });
-	        // AQUI: Você exibe o seu modal ou alerta do Tailwind para o Seu Zé copiar a ID
-	        mostrarAlertaCopiaSegura(idUsuario);
-	
-	    } else {
-	        // 3. SE JÁ TINHA ID, puxamos o "pacotão" de dados da nuvem
-	        const { data, error } = await supabase
-	            .from('historico_fiado')
-	            .select('dados')
-	            .eq('user_id', idUsuario)
-	            .maybeSingle();
-	            gastos = data.dados; // Alimenta a variável
+	    let chaveUsuario = localStorage.getItem('meu_id_servidor');
+	    // SE NÃO ENCONTRAR A CHAVE LOCAL...
+	    if (!chaveUsuario) {
+	        // Exibe o modal inicial removendo a classe 'hidden' do Tailwind
+	        document.getElementById('modal-inicial').classList.remove('hidden');
+	        // Travamos a execução aqui. O app fica esperando os cliques nos botões do modal!
+	        configurarBotoesModal();
+	        return; 
 	    }
-	
-	    // 4. Executa a sua função grande que desenha a tela com o Tailwind
-	    renderizar();
+	    // Se já tiver a chave, segue o fluxo normal que criamos antes (busca na nuvem, valida se é adm/use...)
+	    processarChaveExistente(chaveUsuario);
 	}
+	  
+
+
 
 
     function getMesReferencia(offset) {
@@ -644,7 +620,80 @@ if ("serviceWorker" in navigator) {
 	    }
 	}
 
+	// Função auxiliar para gerar 3 caracteres aleatórios (letras maiúsculas e números)
+	function gerarSufixoSecreto() {
+	    const caracteres = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removi o 'O', 'I', '1' e '0' para o Seu Zé não confundir no papel
+	    let resultado = "";
+	    for (let i = 0; i < 3; i++) {
+	        resultado += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+	    }
+	    return resultado;
+	}
 
+	function configurarBotoesModal() {
+	    // AÇÃO 1: CRIAR NOVO BANCO
+	    document.getElementById('btn-criar-banco').onclick = async () => {
+	        // Gera o ID administrativo completo com os 3 caracteres aleatórios
+	        let idBase = gerarIdAleatorio(); // Função FIADO-XXXXX-XXXXX
+	        let sufixo = gerarSufixoSecreto(); // Função D5X
+	        let chaveCompletaADM = `${idBase}-${sufixo}`; // adm-XXXXX-XXXXX-D5X (nós podemos adicionar o 'adm-' no começo na hora de salvar)
+	        
+	        let chaveFinal = `adm-${chaveCompletaADM}`;
+	
+	        // Cria a estrutura do JSON zerada, já injetando a senha de 3 dígitos lá dentro
+	        let estruturaInicial = {
+	            senha_adm: sufixo,
+	            clientes_e_fiados: []
+	        };
+	
+	        // Salva a linha virgem lá no Supabase usando o ID Base como user_id
+	        await supabase.from('historico_fiado').insert({ 
+	            user_id: idBase, 
+	            dados: estruturaInicial 
+	        });
+	
+	        // Grava no LocalStorage do aparelho do Seu Zé
+	        localStorage.setItem('meu_id_servidor', chaveFinal);
+	
+	        // Fecha o modal escondendo ele novamente
+	        document.getElementById('modal-inicial').classList.add('hidden');
+	
+	        // Mostra um novo alerta/popup forçando o Seu Zé a ver a chave dele
+	        alert(`IMPORTANTE, Seu Zé!\nSua chave de recuperação é:\n\n${chaveFinal}\n\nAnotou? Clique em OK para começar.`);
+	
+	        // Alimenta a variável global e desenha a tela bonita vazia igual ao seu print!
+	        gastos = [];
+	        renderizar();
+	    };
+	
+	    // AÇÃO 2: MOSTRAR CAMPO DE RECUPERAÇÃO
+	    document.getElementById('btn-abrir-recuperar').onclick = () => {
+	        // Revela a caixinha de texto oculta para ele digitar a chave antiga
+	        document.getElementById('campo-recuperacao').classList.remove('hidden');
+	    };
+	
+	    // AÇÃO 3: CONFIRMAR RECUPERAÇÃO E PUXAR DADOS DA NUVEM
+	    document.getElementById('btn-confirmar-recuperar').onclick = async () => {
+	        let chaveDigitada = document.getElementById('input-chave-antiga').value.trim().toLowerCase();
+	
+	        if (!chaveDigitada) {
+	            alert("Digite a sua chave para continuar!");
+	            return;
+	        }
+	
+	        // Salva a chave digitada no LocalStorage do celular novo
+	        localStorage.setItem('meu_id_servidor', chaveDigitada);
+	        
+	        // Esconde o modal e força o app a recarregar buscando as informações da internet
+	        document.getElementById('modal-inicial').classList.add('hidden');
+	        
+	        // Reinicia o app, que agora vai achar a chave no LocalStorage e rodar o fluxo de baixar os dados!
+	        iniciarAplicativo(); 
+	    };
+	}
+
+
+	  
 	  
 	  // O final do seu arquivo de script agora apenas dispara o início do fluxo da nuvem
 	iniciarAplicativo();
