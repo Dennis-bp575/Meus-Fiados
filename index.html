@@ -300,8 +300,11 @@ if ("serviceWorker" in navigator) {
 	    // Puxa o pacote usando a nossa nova função fetch limpa
 	    let pacoteNuvem = await buscarDadosDaNuvemHTTP(idBanco);
 	
-	    if (!pacoteNuvem) {
+	    if (!pacoteNuvem?.length) {
 	        gastos = [];
+			alert("Chave de Administrador inválida!");
+	        localStorage.removeItem('meu_id_servidor');
+	        window.location.reload();
 	    } else {
 	        // Validação de administrador contra a funcionária espertinha
 	        if (prefixo === "ADM") {
