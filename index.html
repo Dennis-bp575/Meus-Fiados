@@ -759,7 +759,13 @@ if ("serviceWorker" in navigator) {
 	            "Authorization": `Bearer ${SUPABASE_KEY}`
 	        }
 	    });
-	
+
+		console.log("status:", resposta.status);
+		const dadosRecebidos = await resposta.json();
+		console.log("resposta:", dadosRecebidos);
+		
+
+		
 	    if (!resposta.ok) {
 	        console.error("Erro ao buscar dados na nuvem");
 	        return null;
