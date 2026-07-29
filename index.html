@@ -301,7 +301,7 @@ if ("serviceWorker" in navigator) {
 	    let pacoteNuvem = await buscarDadosDaNuvemHTTP(idBanco);
 		console.dir(pacoteNuvem);
 		console.log(pacoteNuvem.senha_adm);
-	    if (!pacoteNuvem?.length) {
+	    if (!pacoteNuvem) {
 	        gastos = [];
 			alert("Chave de Administrador inválida!");
 	        localStorage.removeItem('meu_id_servidor');
