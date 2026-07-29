@@ -252,13 +252,13 @@ if ("serviceWorker" in navigator) {
 		    <!-- Sub-tela Oculta: Campo para digitar a chave se ele clicar na Opção 2 -->
 			<div id="campo-recuperacao" class="mt-4 pt-4 border-t border-slate-700 hidden">
 			  <input type="text" 
-			         id="input-chave-antiga" 
-			         oninput="autoPreencherPrefixo(this)"
-			         placeholder="Ex: Digite A ou U para começar..." 
-			         class="w-full bg-slate-900 border border-slate-600 rounded-xl p-3 
-			                text-center text-white font-mono text-sm uppercase tracking-wider 
-			                focus:outline-none focus:border-emerald-500 mb-3 transition-all">
-			  
+			       id="input-chave-antiga" 
+			       onkeyup="autoPreencherPrefixo(this, event)"
+			       placeholder="Ex: adm-12345-67890-D5X" 
+			       class="w-full bg-slate-900 border border-slate-600 rounded-xl 
+				          p-3 text-center text-white font-mono text-sm uppercase 
+				          tracking-wider focus:outline-none focus:border-emerald-500 mb-3 transition-all">
+
 			  <button id="btn-confirmar-recuperar" 
 			          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold 
 			                 py-2 px-4 rounded-xl text-sm transition-all">
@@ -875,63 +875,64 @@ if ("serviceWorker" in navigator) {
 	    window.open(`https://wa.me/?text=${mensagemCodificada}`, "_blank");
 	}
 
-	function autoPreencherPrefixo(input) {
-	    let valor = input.value.toUpperCase();
-		console.log("O que o usuário digitou:", input.value);
-	    // 1. A SUA IDEIA: Se digitou só 'A' ou 'U', já bota o prefixo com traço direto!
-	    if (valor === 'A') {
-	        input.value = 'ADM-A';
-	        return;
-	    }
-	    if (valor === 'U') {
-	        input.value = 'USE-A';
-	        return;
-	    }
-	
-	    // 2. Limpeza inteligente: se ele apagar o traço do início, limpa tudo de vez
-	    if (valor === 'ADM' || valor === 'USE') {
-	        input.value = '';
-	        return;
-	    }
-	
-	    // 3. Aplica a máscara no resto dos números (apenas se já tiver passado do "ADM-")
-	    if (valor.startsWith("ADM-A") || valor.startsWith("USE-A")) {
-	        // Remove os traços do meio para recalcular a posição certa dos números
-	        let prefixo = valor.substring(0, 5); // Guarda o "ADM-A" ou "USE-A"
-	        let oResto = valor.substring(5).replace(/-/g, ''); // Pega só os números/letras digitados
-			console.log("prefixo=", prefixo)
-			console.log("oResto=", oResto)
-	        let resultado = prefixo;
-	
-	        if (oResto.length > 0) {
-	            console.log("oresto0=", oResto.length)
-	            resultado += oResto.substring(0, 5);
-				console.log("resultado=", resultado)
-	        }
-			if (oResto.length === 5) {
-	            console.log("oresto6=", oResto.length)
-	            resultado += '-B';
-				console.log("resultado=", resultado)
-	        }
-	        if (oResto.length > 5) {
-	            console.log("oresto7=", oResto.length)
-	            resultado += '-B' + oResto.substring(6, 11);
-				console.log("resultado=", resultado)
-	        }
-			if (oResto.length === 11) {
-	            console.log("oresto7=", oResto.length)
-	            resultado += '-' + oResto.substring(11, 12);
-				console.log("resultado=", resultado)
-	        }
-	        if (oResto.length > 11) {
-	            console.log("oresto12=", oResto.length)
-	            resultado += '-' + oResto.substring(11, 14);
-				console.log("resultado=", resultado)
-	        }
-			console.log("resultado=", resultado)
-	        input.value = resultado;
-	    }
-	}
+		function autoPreencherPrefixo(input, event) {
+		    // 🛡️ A TRAVA MÁGICA: Se a tecla apertada for Backspace ou Delete, 
+		    // deixa o usuário apagar em paz e não faz nenhuma máscara agora!
+		    if (event && (event.key === "Backspace" || event.key === "Delete")) {
+		        console.log("⬅️ Usuário apagando, pausando a máscara.");
+		        
+		        // Se ele apagar até sumir o traço do início, limpa tudo
+		        let valorAtual = input.value.toUpperCase();
+		        if (valorAtual === 'ADM' || valorAtual === 'USE') {
+		            input.value = '';
+		        }
+		        return; 
+		    }
+		
+		    let valor = input.value.toUpperCase();
+		    console.log("O que o usuário digitou:", input.value);
+		    
+		    // 1. Se digitou só 'A' ou 'U', bota o prefixo direto
+		    if (valor === 'A') {
+		        input.value = 'ADM-A';
+		        return;
+		    }
+		    if (valor === 'U') {
+		        input.value = 'USE-A';
+		        return;
+		    }
+		
+		    // 2. Limpeza inteligente
+		    if (valor === 'ADM' || valor === 'USE') {
+		        input.value = '';
+		        return;
+		    }
+		
+		    // 3. Aplica a sua máscara perfeita (O SEU CÓDIGO DAQUI PARA BAIXO)
+		    if (valor.startsWith("ADM-A") || valor.startsWith("USE-A")) {
+		        let prefixo = valor.substring(0, 5); 
+		        let oResto = valor.substring(5).replace(/-/g, ''); 
+		        let resultado = prefixo;
+		
+		        if (oResto.length > 0) {
+		            resultado += oResto.substring(0, 5);
+		        }
+		        if (oResto.length === 5) {
+		            resultado += '-B';
+		        }
+		        if (oResto.length > 5) {
+		            resultado += '-B' + oResto.substring(6, 11);
+		        }
+		        if (oResto.length === 11) {
+		            resultado += '-' + oResto.substring(11, 12);
+		        }
+		        if (oResto.length > 11) {
+		            resultado += '-' + oResto.substring(11, 14);
+		        }
+		        
+		        input.value = resultado;
+		    }
+		}
 
 
 
