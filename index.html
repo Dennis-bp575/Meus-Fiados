@@ -299,8 +299,8 @@ if ("serviceWorker" in navigator) {
 		
 	    // Puxa o pacote usando a nossa nova função fetch limpa
 	    let pacoteNuvem = await buscarDadosDaNuvemHTTP(idBanco);
-		console.log("id= ", idBanco)
-		console.log("sufixo= ", pacoteNuvem.senha_adm)
+		console.dir(pacoteNuvem);
+		console.log(pacoteNuvem.senha_adm);
 	    if (!pacoteNuvem?.length) {
 	        gastos = [];
 			alert("Chave de Administrador inválida!");
