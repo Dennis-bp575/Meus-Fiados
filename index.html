@@ -702,14 +702,13 @@ if ("serviceWorker" in navigator) {
 	        let chaveFinalADM = `ADM-${idBase}-${sufixo}`;
 	        // 2. Monta o pacote de dados inicial que vai para o cofre do JSON
 	        let estruturaInicial = {
-	            senha_adm: sufixo,
 	            clientes_e_fiados: []
 	        };
 	        const btnCriar = document.getElementById('btn-criar-banco');
 	        btnCriar.disabled = true;
 	        btnCriar.innerText = "Criando banco na nuvem...";
 	        // 4. Envia para o Supabase usando a nossa nova função HTTP com Fetch
-	        await salvarDadosNaNuvemHTTP(idBase, estruturaInicial);
+			await criarNovaContaHTTP(idBase, sufixo, estruturaInicial);
 	        // 5. Salva a chave ADM completa no LocalStorage do celular dele
 	        localStorage.setItem('meu_id_servidor', chaveFinalADM);
 	        // 6. Esconde o modal inicial do Tailwind
@@ -809,7 +808,33 @@ if ("serviceWorker" in navigator) {
 	    }
 	}
 
-	  
+	async function criarNovaContaHTTP(idBanco, senhaAdm, pacoteDados) {
+	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado`; // Sem o on_conflict, pois é um insert puro
+	
+	    const resposta = await fetch(url, {
+	        method: "POST",
+	        headers: {
+	            "apikey": SUPABASE_KEY,
+	            "Authorization": `Bearer ${SUPABASE_KEY}`,
+	            "Content-Type": "application/json",
+	            "Prefer": "return=minimal" 
+	        },
+	        body: JSON.stringify({
+	            user_id: idBanco,      // Coluna user_id
+	            senha_adm: senhaAdm,   // Coluna senha_adm (o seu sufixo)
+	            dados: pacoteDados     // Coluna dados (o JSONB limpo)
+	        })
+	    });
+	
+	    if (!resposta.ok) {
+	        const textoErro = await resposta.text();
+	        console.error("Erro ao criar conta no Supabase:", textoErro);
+	        alert("Erro ao criar a conta.");
+	        return false;
+	    }
+	    console.log("🚀 Conta master criada com sucesso com colunas separadas!");
+	    return true;
+	}  
 
 	window.addEventListener('DOMContentLoaded', () => {
 	    console.log("Todos os scripts carregados! Iniciando o motor do Seu Zé.");
