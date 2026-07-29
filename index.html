@@ -877,7 +877,7 @@ if ("serviceWorker" in navigator) {
 
 	function autoPreencherPrefixo(input) {
 	    let valor = input.value.toUpperCase();
-	
+		console.log("O que o usuário digitou:", input.value);
 	    // 1. A SUA IDEIA: Se digitou só 'A' ou 'U', já bota o prefixo com traço direto!
 	    if (valor === 'A') {
 	        input.value = 'ADM-A';
@@ -917,7 +917,7 @@ if ("serviceWorker" in navigator) {
 	            resultado += oResto.substring(12, 15);
 				console.log("resultado=", resultado)
 	        }
-	
+			console.log("resultado=", resultado)
 	        input.value = resultado;
 	    }
 	}
