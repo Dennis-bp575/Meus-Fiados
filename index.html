@@ -691,7 +691,7 @@ if ("serviceWorker" in navigator) {
 	        // 1. Gera os IDs aleatórios e o segredo de 3 dígitos
 	        let idBase = gerarIdAleatorio();       // Ex: 87363-92736
 	        let sufixo = gerarSufixoSecreto();    // Ex: D5X
-	        let chaveFinalADM = `adm-${idBase}-${sufixo}`;
+	        let chaveFinalADM = `ADM-${idBase}-${sufixo}`;
 	        // 2. Monta o pacote de dados inicial que vai para o cofre do JSON
 	        let estruturaInicial = {
 	            senha_adm: sufixo,
@@ -707,7 +707,7 @@ if ("serviceWorker" in navigator) {
 	        // 6. Esconde o modal inicial do Tailwind
 	        document.getElementById('modal-inicial').classList.add('hidden');
 	        // 7. Exibe o aviso importante para ele anotar a chave
-	        alert(`IMPORTANTE, Seu Zé!\nSua chave de recuperação é:\n\n${chaveFinalADM}\n\nAnotou? Clique em OK para começar.`);
+	        alert(`IMPORTANTE!\nSua chave de recuperação é:\n\n${chaveFinalADM}\n\nAnote e clique em OK para começar.`);
 	
 	        // 8. Reinicia o estado do app limpo e desenha a tela preta com R$ 0,00
 	        gastos = [];
