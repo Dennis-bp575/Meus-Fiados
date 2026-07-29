@@ -876,24 +876,43 @@ if ("serviceWorker" in navigator) {
 	}
 
 	function autoPreencherPrefixo(input) {
-	    let valor = input.value.toUpperCase();
+	    // 1. Remove qualquer traço que o usuário digitar para não duplicar a máscara
+	    let valor = input.value.toUpperCase().replace(/-/g, '');
 	
-	    // 1. Facilitador: Se digitou as únicas opções válidas
-	    if (valor === 'A') {
-	        input.value = 'ADM-';
-	    } 
-	    else if (valor === 'U') {
-	        input.value = 'USE-';
-	    }
-	    // 2. Se ele se confundir ao apagar (remover o traço), limpa tudo de vez
-	    else if (valor === 'ADM' || valor === 'USE') {
+	    // 2. Atalho inicial: se digitou apenas 'A' ou 'U', já inicia com o prefixo
+	    if (valor === 'A') valor = 'ADM';
+	    if (valor === 'U') valor = 'USE';
+	
+	    // 3. Regra de Limpeza: se ele apagar o prefixo inicial, limpa o campo todo
+	    if (valor === 'AD' || valor === 'US') {
 	        input.value = '';
+	        return;
 	    }
-	    // 3. O SEU ELSE IF: Se digitar qualquer letra errada logo de início, limpa na hora!
-	    else if (valor.length === 1) {
-	        input.value = '';
+	
+	    // 4. Montagem da Máscara Dinâmica baseada no tamanho do texto
+	    let resultado = '';
+	
+	    if (valor.length > 0) {
+	        // Pega as primeiras 3 letras (ADM ou USE)
+	        resultado += valor.substring(0, 3);
 	    }
+	    if (valor.length > 3) {
+	        // Adiciona o primeiro traço e o bloco do primeiro número (Ex: -A12345)
+	        resultado += '-' + valor.substring(3, 9);
+	    }
+	    if (valor.length > 9) {
+	        // Adiciona o segundo traço e o bloco do segundo número (Ex: -B12345)
+	        resultado += '-' + valor.substring(9, 15);
+	    }
+	    if (valor.length > 15) {
+	        // Adiciona o terceiro traço e o sufixo final de segurança do ADM (Ex: -XXX)
+	        resultado += '-' + valor.substring(15, 18);
+	    }
+	
+	    // 5. Devolve o texto formatado para o input
+	    input.value = resultado;
 	}
+
 
 
 
