@@ -877,17 +877,23 @@ if ("serviceWorker" in navigator) {
 	function autoPreencherPrefixo(input) {
 	    let valor = input.value.toUpperCase();
 	
+	    // 1. Facilitador: Se digitou as únicas opções válidas
 	    if (valor === 'A') {
 	        input.value = 'ADM-';
 	    } 
 	    else if (valor === 'U') {
 	        input.value = 'USE-';
 	    }
-	    // ELSE FINAL: Se digitar qualquer outra letra que não seja A ou U logo de início, limpa na hora
-	    else if (valor.length === 1 && valor !== 'A' && valor !== 'U') {
+	    // 2. Se ele se confundir ao apagar (remover o traço), limpa tudo de vez
+	    else if (valor === 'ADM' || valor === 'USE') {
+	        input.value = '';
+	    }
+	    // 3. O SEU ELSE IF: Se digitar qualquer letra errada logo de início, limpa na hora!
+	    else if (valor.length === 1) {
 	        input.value = '';
 	    }
 	}
+
 
 
 	window.addEventListener('DOMContentLoaded', () => {
