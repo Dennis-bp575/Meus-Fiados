@@ -296,10 +296,11 @@ if ("serviceWorker" in navigator) {
 	    let prefixo = partes[0];
 	    let idBanco = `${partes[1]}-${partes[2]}`;
 	    let sufixoDigitado = partes[3] || "";
-	
+		
 	    // Puxa o pacote usando a nossa nova função fetch limpa
 	    let pacoteNuvem = await buscarDadosDaNuvemHTTP(idBanco);
-	
+		console.log("id= ", idBanco)
+		console.log("sufixo= ", pacoteNuvem.senha_adm)
 	    if (!pacoteNuvem?.length) {
 	        gastos = [];
 			alert("Chave de Administrador inválida!");
@@ -309,7 +310,7 @@ if ("serviceWorker" in navigator) {
 	        // Validação de administrador contra a funcionária espertinha
 	        if (prefixo === "ADM") {
 	            if (sufixoDigitado !== pacoteNuvem.senha_adm) {
-	                alert("Chave de Administrador inválida!");
+	                alert("Chave de Administrador inválidada!");
 	                localStorage.removeItem('meu_id_servidor');
 	                window.location.reload();
 	                return;
