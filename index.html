@@ -746,6 +746,7 @@ if ("serviceWorker" in navigator) {
 
 
 	async function buscarDadosDaNuvemHTTP(idBanco) {
+		idBanco = idBanco.trim();
 	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?user_id=eq.${idBanco}&select=dados`;
 
 		console.log("idBanco:", idBanco);
