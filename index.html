@@ -871,7 +871,7 @@ if ("serviceWorker" in navigator) {
 	                     `Basta copiar essa chave e colar no aplicativo para acessar as vendas do dia. Boa colheita! 🚀`;
 	                     
 	    const mensagemCodificada = encodeURIComponent(mensagem);
-	    window.open(`https://wa.me{mensagemCodificada}`, "_blank");
+	    window.open(`https://wa.me/?text=${mensagemCodificada}`, "_blank");
 	}
 
 	function autoPreencherPrefixo(input) {
