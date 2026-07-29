@@ -300,7 +300,7 @@ if ("serviceWorker" in navigator) {
 		
 	    // Puxa o pacote usando a nossa nova função fetch limpa
 	    let pacoteNuvem = await buscarDadosDaNuvemHTTP(idBanco);
-		console.dir(pacoteNuvem);
+		//console.dir(pacoteNuvem);
 		console.log(pacoteNuvem.senha_adm);
 	    if (!pacoteNuvem) {
 	        gastos = [];
@@ -687,7 +687,8 @@ if ("serviceWorker" in navigator) {
 	}
 
 	function configurarBotoesModal() {
-	    // AÇÃO 1: CRIAR NOVO BANCO (Gera chaves e envia via POST)
+	    
+		// AÇÃO 1: CRIAR NOVO BANCO (Gera chaves e envia via POST)
 	    document.getElementById('btn-criar-banco').onclick = async () => {
 	        // 1. Gera os IDs aleatórios e o segredo de 3 dígitos
 	        let idBase = gerarIdAleatorio();       // Ex: 87363-92736
@@ -749,8 +750,8 @@ if ("serviceWorker" in navigator) {
 		idBanco = idBanco.trim();
 	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?user_id=eq.${idBanco}&select=dados`;
 
-		console.log("idBanco:", idBanco);
-		console.log(idBanco.length);
+		//console.log("idBanco:", idBanco);
+		//console.log(idBanco.length);
 		
 	    const resposta = await fetch(url, {
 	        method: "GET",
@@ -759,10 +760,6 @@ if ("serviceWorker" in navigator) {
 	            "Authorization": `Bearer ${SUPABASE_KEY}`
 	        }
 	    });
-
-		
-		
-
 		
 	    if (!resposta.ok) {
 	        console.error("Erro ao buscar dados na nuvem");
