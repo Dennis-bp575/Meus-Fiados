@@ -727,12 +727,12 @@ if ("serviceWorker" in navigator) {
 	            alert("Por favor, digite a sua chave!");
 	            return;
 	        }
-	
+			console.log(chaveDigitada)
 	        // Transforma em minúsculo para evitar erros se o Seu Zé digitar "ADM-" ou "USE-"
-	        let chaveFormatada = chaveDigitada.toLowerCase();
+	        // let chaveFormatada = chaveDigitada;
 	
 	        // Salva a chave no LocalStorage do aparelho novo
-	        localStorage.setItem('meu_id_servidor', chaveFormatada);
+	        localStorage.setItem('meu_id_servidor', chaveDigitada);
 	        
 	        // Esconde o modal
 	        document.getElementById('modal-inicial').classList.add('hidden');
