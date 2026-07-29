@@ -772,7 +772,8 @@ if ("serviceWorker" in navigator) {
 	    const dadosRecebidos = await resposta.json();
 		console.log("status:", resposta.status);
 		console.log("resposta:", dadosRecebidos);
-		
+		console.log(JSON.stringify(dadosRecebidos, null, 2));
+		console.dir(dadosRecebidos);
 	    
 	    // Como o select retorna uma lista, pegamos o primeiro item se existir
 	    return dadosRecebidos.length > 0 ? dadosRecebidos[0].dados : null;
