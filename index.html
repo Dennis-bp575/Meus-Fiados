@@ -296,7 +296,7 @@ if ("serviceWorker" in navigator) {
 	    let partes = chaveUsuario.split('-');
 	    let prefixo = partes[0];
 	    let idBanco = `${partes[1].trim()}-${partes[2].trim()}`;
-	    let sufixoDigitado = partes[3].trim() || "";
+	    let sufixoDigitado = partes[3] || "";
 		
 	    // Puxa o pacote usando a nossa nova função fetch limpa
 	    let pacoteNuvem = await buscarDadosDaNuvemHTTP(idBanco);
