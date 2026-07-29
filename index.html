@@ -923,10 +923,10 @@ if ("serviceWorker" in navigator) {
 		        if (oResto.length > 5) {
 		            resultado += '-B' + oResto.substring(6, 11);
 		        }
-		        if (oResto.length === 11) {
+		        if (valor.startsWith("ADM-") && oResto.length === 11) {
 		            resultado += '-' + oResto.substring(11, 12);
 		        }
-		        if (oResto.length > 11) {
+		        if (valor.startsWith("ADM-") && oResto.length > 11) {
 		            resultado += '-' + oResto.substring(11, 14);
 		        }
 		        
