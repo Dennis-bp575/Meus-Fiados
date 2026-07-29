@@ -905,15 +905,15 @@ if ("serviceWorker" in navigator) {
 	
 	        if (oResto.length > 0) {
 	            console.log("oresto0=", oResto.length)
-	            resultado += oResto.substring(1, 6);
+	            resultado += oResto.substring(0, 5);
 				console.log("resultado=", resultado)
 	        }
-			if (oResto.length === 6) {
+			if (oResto.length === 5) {
 	            console.log("oresto6=", oResto.length)
 	            resultado += '-B';
 				console.log("resultado=", resultado)
 	        }
-	        if (oResto.length > 7) {
+	        if (oResto.length > 6) {
 	            console.log("oresto7=", oResto.length)
 	            resultado += oResto.substring(7, 12);
 				console.log("resultado=", resultado)
