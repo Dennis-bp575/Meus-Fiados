@@ -194,6 +194,16 @@ if ("serviceWorker" in navigator) {
 		    MAIO 2026
 		  </div>
 	  </div>
+
+		<div class="flex justify-end px-1 mb-3">
+		    <!-- Passamos a variável global direto dentro do onclick -->
+		    <button onclick="enviarChaveFuncionarioWhatsApp(idBancoGlobal)" 
+		            class="text-xs text-slate-400 hover:text-green-400 
+		                   flex items-center gap-1 transition-all font-medium">
+		        <span>💬 Compartilhar acesso do funcionário</span>
+		    </button>
+		</div>
+				
       <!-- BOTÃO VOZ -->
       <button onclick="iniciarMicrofone()"
 	  class="w-full
@@ -279,7 +289,7 @@ if ("serviceWorker" in navigator) {
 	const SUPABASE_URL = 'https://zqdjkazwinzmmtwgpycn.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_s3vcDX41fY9DA48qO8k80g_cZTOckMg';
 	let usuarioADM = false;
-	
+	let idBancoGlobal = ""; 
     let abaAtual = 0;
     let gastos = []
 
@@ -318,10 +328,12 @@ if ("serviceWorker" in navigator) {
 	            }
 				usuarioADM = true;
 	            gastos = pacoteNuvem.dados.clientes_e_fiados;
+				idBancoGlobal = idBanco; 
 	        } else {
 	            // Modo caixa funcionária
 	            gastos = pacoteNuvem.dados.clientes_e_fiados;
 	            usuarioADM = false;
+				idBancoGlobal = idBanco; 
 	        }
 	    }
 	
@@ -835,6 +847,24 @@ if ("serviceWorker" in navigator) {
 	    console.log("🚀 Conta master criada com sucesso com colunas separadas!");
 	    return true;
 	}  
+
+	function enviarChaveFuncionarioWhatsApp(idBanco) {
+	    // Se por acaso o app iniciou mas o ID não carregou ainda
+	    if (!idBanco) {
+	        alert("Erro: ID do banco de dados ainda não foi carregado!");
+	        return;
+	    }
+	    
+	    const chaveFuncionario = `USE-${idBanco}`;
+	    const mensagem = `Olá! Aqui está a sua chave de acesso ao sistema de fiados:\n\n` +
+	                     `🔑 *Chave:* ${chaveFuncionario}\n\n` +
+	                     `Basta copiar essa chave e colar no aplicativo para acessar as vendas do dia. Boa colheita! 🚀`;
+	                     
+	    const mensagemCodificada = encodeURIComponent(mensagem);
+	    window.open(`https://wa.me{mensagemCodificada}`, "_blank");
+	}
+
+
 
 	window.addEventListener('DOMContentLoaded', () => {
 	    console.log("Todos os scripts carregados! Iniciando o motor do Seu Zé.");
