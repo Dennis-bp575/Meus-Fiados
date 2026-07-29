@@ -317,10 +317,10 @@ if ("serviceWorker" in navigator) {
 	                return;
 	            }
 				usuarioADM = true;
-	            gastos = pacoteNuvem.clientes_e_fiados;
+	            gastos = pacoteNuvem.dados.clientes_e_fiados;
 	        } else {
 	            // Modo caixa funcionária
-	            gastos = pacoteNuvem.clientes_e_fiados;
+	            gastos = pacoteNuvem.dados.clientes_e_fiados;
 	            usuarioADM = false;
 	        }
 	    }
@@ -755,9 +755,6 @@ if ("serviceWorker" in navigator) {
 	async function buscarDadosDaNuvemHTTP(idBanco) {
 		idBanco = idBanco.trim();
 	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?user_id=eq.${idBanco}&select=dados`;
-
-		//console.log("idBanco:", idBanco);
-		//console.log(idBanco.length);
 		
 	    const resposta = await fetch(url, {
 	        method: "GET",
@@ -779,7 +776,7 @@ if ("serviceWorker" in navigator) {
 		console.dir(dadosRecebidos);
 	    
 	    // Como o select retorna uma lista, pegamos o primeiro item se existir
-	    return dadosRecebidos.length > 0 ? dadosRecebidos[0].dados : null;
+	    return dadosRecebidos.length > 0 ? dadosRecebidos[0] : null;
 	}
 
 	async function salvarDadosNaNuvemHTTP(idBanco, pacoteDados) {
