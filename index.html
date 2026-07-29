@@ -310,13 +310,13 @@ if ("serviceWorker" in navigator) {
 	    } else {
 	        // Validação de administrador contra a funcionária espertinha
 	        if (prefixo === "ADM") {
-	            usuarioADM = true;
 				if (sufixoDigitado !== pacoteNuvem.senha_adm) {
 	                alert("Chave de Administrador inválidada!");
 	                localStorage.removeItem('meu_id_servidor');
 	                window.location.reload();
 	                return;
 	            }
+				usuarioADM = true;
 	            gastos = pacoteNuvem.clientes_e_fiados;
 	        } else {
 	            // Modo caixa funcionária
@@ -409,19 +409,16 @@ if ("serviceWorker" in navigator) {
 						</button>
 					` : '<div class="w-[24px]"></div>'}
 					
-					<button onclick="excluirItem(${item.id})"
-					${usuarioADM ? `<button onclick="excluirItem(${item.id})"}
-						  class="w-5 h-5 flex items-center justify-center
-						         rounded-full
-						         border border-slate-300
-						         text-slate-500
-						         text-xs font-bold
-						         bg-red-500
-						         text-white
-						         border-red-500
-						         transition-all">
-						  X
-						</button>
+					
+					${usuarioADM ? `
+					    <button onclick="excluirItem(${item.id})"
+					            class="w-5 h-5 flex items-center justify-center
+					                   rounded-full border border-red-500
+					                   text-xs font-bold bg-red-500 text-white
+					                   transition-all">
+					        X
+					    </button>
+					` : ''}
 				</div>
 			</div>
 
