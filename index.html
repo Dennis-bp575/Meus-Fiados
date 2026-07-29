@@ -866,9 +866,10 @@ if ("serviceWorker" in navigator) {
 	    }
 	    
 	    const chaveFuncionario = `USE-${idBanco}`;
-	    const mensagem = `Olá! Aqui está a sua chave de acesso ao sistema de fiados:\n\n` +
-	                     `🔑 *Chave:* ${chaveFuncionario}\n\n` +
-	                     `Basta copiar essa chave e colar no aplicativo para acessar as vendas do dia. Boa colheita! 🚀`;
+		const mensagem = `Olá! Aqui está a sua chave de acesso ao sistema de fiados:\n\n` +
+                 `🔑 *Chave:* \`${chaveFuncionario}\`\n\n` + // Usar a crase ` deixa o texto com estilo de código no WhatsApp e remove o link!
+                 `Basta copiar essa chave e colar no aplicativo para acessar as vendas do dia. Boa colheita! 🚀`;
+
 	                     
 	    const mensagemCodificada = encodeURIComponent(mensagem);
 	    window.open(`https://wa.me/?text=${mensagemCodificada}`, "_blank");
