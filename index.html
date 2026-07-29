@@ -746,6 +746,9 @@ if ("serviceWorker" in navigator) {
 
 	async function buscarDadosDaNuvemHTTP(idBanco) {
 	    const url = `${SUPABASE_URL}/rest/v1/historico_fiado?user_id=eq.${idBanco}&select=dados`;
+
+		console.log("idBanco:", idBanco);
+		console.log("URL:", `${SUPABASE_URL}/rest/v1/historico_fiado?user_id=eq.${idBanco}&select=dados`);
 	
 	    const resposta = await fetch(url, {
 	        method: "GET",
