@@ -278,13 +278,13 @@ if ("serviceWorker" in navigator) {
   <script>
 	const SUPABASE_URL = 'https://zqdjkazwinzmmtwgpycn.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_s3vcDX41fY9DA48qO8k80g_cZTOckMg';
-	console.log("Veio aqui");
+	
     let abaAtual = 0;
     let gastos = []
 
 	async function iniciarAplicativo() {
 	    let chaveUsuario = localStorage.getItem('meu_id_servidor'); // Ex: adm-87363-92736-D5X
-	console.log(chaveUsuario);
+		console.log(chaveUsuario);
 	    if (!chaveUsuario) {
 	        // Mostra o modal cinza escuro do Tailwind removendo o 'hidden'
 	        document.getElementById('modal-inicial').classList.remove('hidden');
