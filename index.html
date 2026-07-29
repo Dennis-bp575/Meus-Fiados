@@ -876,41 +876,47 @@ if ("serviceWorker" in navigator) {
 	}
 
 	function autoPreencherPrefixo(input) {
-	    // 1. Remove qualquer traço que o usuário digitar para não duplicar a máscara
-	    let valor = input.value.toUpperCase().replace(/-/g, '');
+	    let valor = input.value.toUpperCase();
 	
-	    // 2. Atalho inicial: se digitou apenas 'A' ou 'U', já inicia com o prefixo
-	    if (valor === 'A') valor = 'ADM';
-	    if (valor === 'U') valor = 'USE';
+	    // 1. A SUA IDEIA: Se digitou só 'A' ou 'U', já bota o prefixo com traço direto!
+	    if (valor === 'A') {
+	        input.value = 'ADM-';
+	        return;
+	    }
+	    if (valor === 'U') {
+	        input.value = 'USE-';
+	        return;
+	    }
 	
-	    // 3. Regra de Limpeza: se ele apagar o prefixo inicial, limpa o campo todo
-	    if (valor === 'AD' || valor === 'US') {
+	    // 2. Limpeza inteligente: se ele apagar o traço do início, limpa tudo de vez
+	    if (valor === 'ADM' || valor === 'USE') {
 	        input.value = '';
 	        return;
 	    }
 	
-	    // 4. Montagem da Máscara Dinâmica baseada no tamanho do texto
-	    let resultado = '';
+	    // 3. Aplica a máscara no resto dos números (apenas se já tiver passado do "ADM-")
+	    if (valor.startsWith("ADM-") || valor.startsWith("USE-")) {
+	        // Remove os traços do meio para recalcular a posição certa dos números
+	        let prefixo = valor.substring(0, 4); // Guarda o "ADM-" ou "USE-"
+	        let oResto = valor.substring(4).replace(/-/g, ''); // Pega só os números/letras digitados
 	
-	    if (valor.length > 0) {
-	        // Pega as primeiras 3 letras (ADM ou USE)
-	        resultado += valor.substring(0, 3);
-	    }
-	    if (valor.length > 3) {
-	        // Adiciona o primeiro traço e o bloco do primeiro número (Ex: -A12345)
-	        resultado += '-' + valor.substring(3, 9);
-	    }
-	    if (valor.length > 9) {
-	        // Adiciona o segundo traço e o bloco do segundo número (Ex: -B12345)
-	        resultado += '-' + valor.substring(9, 15);
-	    }
-	    if (valor.length > 15) {
-	        // Adiciona o terceiro traço e o sufixo final de segurança do ADM (Ex: -XXX)
-	        resultado += '-' + valor.substring(15, 18);
-	    }
+	        let resultado = prefixo;
 	
-	    // 5. Devolve o texto formatado para o input
-	    input.value = resultado;
+	        if (oResto.length > 0) {
+	            // Adiciona o primeiro bloco (Ex: A12345)
+	            resultado += oResto.substring(0, 6);
+	        }
+	        if (oResto.length > 6) {
+	            // Se passar de 6 caracteres, brota o segundo traço sozinho (Ex: -B12345)
+	            resultado += '-' + oResto.substring(6, 12);
+	        }
+	        if (oResto.length > 12) {
+	            // Se passar de 12, brota o terceiro traço do sufixo do ADM (Ex: -XXX)
+	            resultado += '-' + oResto.substring(12, 15);
+	        }
+	
+	        input.value = resultado;
+	    }
 	}
 
 
