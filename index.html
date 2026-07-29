@@ -880,11 +880,11 @@ if ("serviceWorker" in navigator) {
 	
 	    // 1. A SUA IDEIA: Se digitou só 'A' ou 'U', já bota o prefixo com traço direto!
 	    if (valor === 'A') {
-	        input.value = 'ADM-';
+	        input.value = 'ADM-A';
 	        return;
 	    }
 	    if (valor === 'U') {
-	        input.value = 'USE-';
+	        input.value = 'USE-A';
 	        return;
 	    }
 	
@@ -897,22 +897,22 @@ if ("serviceWorker" in navigator) {
 	    // 3. Aplica a máscara no resto dos números (apenas se já tiver passado do "ADM-")
 	    if (valor.startsWith("ADM-") || valor.startsWith("USE-")) {
 	        // Remove os traços do meio para recalcular a posição certa dos números
-	        let prefixo = valor.substring(0, 4); // Guarda o "ADM-" ou "USE-"
-	        let oResto = valor.substring(4).replace(/-/g, ''); // Pega só os números/letras digitados
+	        let prefixo = valor.substring(0, 5); // Guarda o "ADM-A" ou "USE-A"
+	        let oResto = valor.substring(5).replace(/-/g, ''); // Pega só os números/letras digitados
 	
 	        let resultado = prefixo;
 	
 	        if (oResto.length > 0) {
 	            // Adiciona o primeiro bloco (Ex: A12345)
-	            resultado += oResto.substring(0, 6);
+	            resultado += oResto.substring(0, 6) + '-';
 	        }
 	        if (oResto.length > 6) {
 	            // Se passar de 6 caracteres, brota o segundo traço sozinho (Ex: -B12345)
-	            resultado += '-' + oResto.substring(6, 12);
+	            resultado += oResto.substring(6, 12) + '-';
 	        }
 	        if (oResto.length > 12) {
 	            // Se passar de 12, brota o terceiro traço do sufixo do ADM (Ex: -XXX)
-	            resultado += '-' + oResto.substring(12, 15);
+	            resultado += oResto.substring(12, 15);
 	        }
 	
 	        input.value = resultado;
