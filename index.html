@@ -354,9 +354,15 @@ if ("serviceWorker" in navigator) {
 		nomeMesDisplay.innerText = mesNome;
 		container.innerHTML = "";
 		let total = 0;
-
-		const gastosFiltrados = gastos.filter(g => g.mesRef === mesNome);
-
+		const hoje = String(new Date().getDate()).padStart(2, '0');
+		const gastosFiltrados = gastos.filter(g => {
+		    const ehDoMesAtual = g.mesRef === mesNome;  
+		    if (usuarioADM) {
+		        return ehDoMesAtual;
+		    } 
+		    return ehDoMesAtual && String(g.dia) === hoje;
+		});
+		
 		if (gastosFiltrados.length === 0) {
 			container.innerHTML =
 			`<div class="text-center text-slate-300 py-12 italic">
