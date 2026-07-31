@@ -934,13 +934,21 @@ if ("serviceWorker" in navigator) {
 		    }
 		}
 
+		window.addEventListener('DOMContentLoaded', () => {
+		    console.log("Todos os scripts carregados!");
+		    
+		    function tentarIniciar() {
+		        if (typeof iniciarAplicativo === "function") {
+		            iniciarAplicativo();
+		        } else {
+		            // Se o app.js ainda não carregou a função, espera 50ms e tenta novamente
+		            setTimeout(tentarIniciar, 50);
+		        }
+		    }
+		    
+		    tentarIniciar();
+		});
 
-
-
-	window.addEventListener('DOMContentLoaded', () => {
-	    console.log("Todos os scripts carregados! Iniciando o motor do Seu Zé.");
-	    iniciarAplicativo();
-	});
 
     // renderizar();
   </script>
