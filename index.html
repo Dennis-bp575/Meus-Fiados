@@ -934,16 +934,21 @@ if ("serviceWorker" in navigator) {
 		    }
 		}
 
-		window.addEventListener('DOMContentLoaded', () => {
-		    console.log("Todos os scripts carregados!");
-		    // Damos 100ms de respiro para o navegador desenhar a estrutura inicial 
-		    setTimeout(() => {
-		        if (typeof iniciarAplicativo === "function") {
-					console.log("Carregar");
-		            iniciarAplicativo();
-		        }
-		    }, 150);
-		});
+		function dispararInicializacao() {
+		    console.log("Sistema pronto! Iniciando aplicativo...");
+		    if (typeof iniciarAplicativo === "function") {
+		        iniciarAplicativo();
+		    }
+		}
+		
+		// A MÁGICA CONTRATEMPO:
+		// Se o navegador já terminou de processar tudo (interactive ou complete), inicializa na hora!
+		if (document.readyState === "interactive" || document.readyState === "complete") {
+		    dispararInicializacao();
+		} else {
+		    // Se não estiver pronto ainda (raro no PC), aí sim ele espera o evento
+		    window.addEventListener('DOMContentLoaded', dispararInicializacao);
+		}
 
 
 
