@@ -18,11 +18,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://googleapis.com" rel="stylesheet">
 
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
-}
-</script>
+	<script>
+		if ("serviceWorker" in navigator) {
+		  // Adicionamos ?v=1.0.1 para quebrar o cache antigo de vez e forçar o PC a atualizar!
+		  navigator.serviceWorker.register("sw.js?v=1.0.1");
+		}
+	</script>
+
   
   <style>
     body { font-family: 'Inter', sans-serif; }
