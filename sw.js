@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meus-fiados-v1';
+const CACHE_NAME = 'meus-fiados-cache-v1.0.1';
 // Lista de arquivos que o app precisa para abrir sem internet
 const ASSETS = [
   './',
