@@ -939,9 +939,10 @@ if ("serviceWorker" in navigator) {
 		    // Damos 100ms de respiro para o navegador desenhar a estrutura inicial 
 		    setTimeout(() => {
 		        if (typeof iniciarAplicativo === "function") {
+					console.log("Carregar");
 		            iniciarAplicativo();
 		        }
-		    }, 100);
+		    }, 150);
 		});
 
 
